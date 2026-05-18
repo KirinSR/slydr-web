@@ -16,7 +16,10 @@ function pageHtml(id, nextMarker) {
   const start = source.indexOf(marker);
   const end = source.indexOf(nextMarker, start);
   if (start === -1 || end === -1) throw new Error(`Could not extract ${id}`);
-  return source.slice(start + marker.length, end).trim();
+  return source
+    .slice(start + marker.length, end)
+    .trim()
+    .replace(/\n<\/div>\s*(?:<!-- \/page-[a-z]+ -->)?$/, "");
 }
 
 function write(path, content) {
@@ -26,8 +29,7 @@ function write(path, content) {
 }
 
 const css = between(source, "<style>", "</style>")
-  .replace(".page{display:none}\n.page.active{display:block}\n", "")
-  .replace(/cursor:none/g, "cursor:auto");
+  .replace(".page{display:none}\n.page.active{display:block}\n", "");
 
 write(
   "styles/globals.css",
