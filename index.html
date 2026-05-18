@@ -371,8 +371,7 @@ body:has(a:hover) #cur-ring,body:has(button:hover) #cur-ring{width:56px;height:5
 /* ─── NAV ─── */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:26px 64px;display:flex;align-items:center;justify-content:space-between;transition:background .5s,padding .4s,border-color .4s;border-bottom:1px solid transparent}
 nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(24px);border-bottom-color:var(--border)}
-.nav-logo{font-family:var(--serif);font-size:22px;font-weight:300;letter-spacing:0.09em;color:var(--white);text-decoration:none;cursor:none}
-.nav-logo sup{color:var(--gold);font-size:8px;letter-spacing:0.2em;vertical-align:super;font-family:var(--sans)}
+.nav-logo{font-family:var(--serif);font-size:27px;font-weight:300;letter-spacing:0.075em;color:var(--white);text-decoration:none;cursor:none}
 .nav-center{display:flex;gap:36px;list-style:none;align-items:center}
 .nav-center li a{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;transition:color .25s;padding:4px 0;position:relative}
 .nav-center li a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s}
@@ -771,7 +770,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 <!--  NAVIGATION                         -->
 <!-- ═══════════════════════════════════ -->
 <nav id="nav">
-  <a href="#" class="nav-logo" onclick="showPage('home',this);return false">slydr<sup>®</sup></a>
+  <a href="#" class="nav-logo" onclick="showPage('home',this);return false">slydr</a>
   <ul class="nav-center">
     <li><a href="#" onclick="showPage('home',this);return false" class="active-link" data-page="home">Home</a></li>
     <li><a href="#" onclick="showPage('features',this);return false" data-page="features">Features</a></li>
@@ -1480,7 +1479,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 <footer class="site-footer">
   <div class="footer-top">
     <div class="foot-brand">
-      <a href="#" class="nav-logo" onclick="showPage('home',null);return false">slydr<sup>®</sup></a>
+      <a href="#" class="nav-logo" onclick="showPage('home',null);return false">slydr</a>
       <p class="foot-tagline">Organizational presentation memory. Stop rebuilding slides.</p>
       <div class="foot-socials">
         <a href="#" class="soc-btn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v4M4 4v.5M7 10V7.5C7 6.7 7.7 6 8.5 6S10 6.7 10 7.5V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
