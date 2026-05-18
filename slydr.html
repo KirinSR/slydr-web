@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>slydr — Organizational Slide Memory</title>
+<!-- Anti-flash: apply theme before CSS renders -->
+<script>try{const t=localStorage.getItem('slydr-theme');const p=window.matchMedia('(prefers-color-scheme: light)').matches;document.documentElement.setAttribute('data-theme',t||(p?'light':'dark'))}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#080808;--surface:#0f0f0f;--surface2:#161616;--surface3:#1e1e1e;
+  --border:rgba(255,255,255,0.06);--border-b:rgba(255,255,255,0.12);
+  --gold:#c9a96e;--gold-d:rgba(201,169,110,0.15);
+  --white:#f0ede8;--muted:rgba(240,237,232,0.42);--faint:rgba(240,237,232,0.15);
+  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Geist',system-ui,sans-serif;
+}
+
+/* ─── LIGHT MODE TOKENS ─── */
+html[data-theme="light"]{
+  --void:#f5f1eb;
+  --surface:#ede9e2;
+  --surface2:#e2ddd5;
+  --surface3:#d5cfc5;
+  --border:rgba(14,12,8,0.09);
+  --border-b:rgba(14,12,8,0.18);
+  --gold:#a8783a;
+  --gold-d:rgba(168,120,58,0.12);
+  --white:#1a1610;
+  --muted:rgba(26,22,16,0.58);
+  --faint:rgba(26,22,16,0.32);
+}
+
+/* ── body & base ── */
+html[data-theme="light"] body{background:var(--void);color:var(--white)}
+
+/* ── nav ── */
+html[data-theme="light"] nav{color:var(--white)}
+html[data-theme="light"] nav.scrolled{background:rgba(245,241,235,0.94);border-bottom-color:var(--border)}
+html[data-theme="light"] .nav-logo{color:var(--white)}
+html[data-theme="light"] .nav-btn{color:var(--white);border-color:var(--border-b)}
+html[data-theme="light"] .nav-btn.ghost{color:var(--muted)}
+html[data-theme="light"] .nav-btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+html[data-theme="light"] .nav-btn:hover:not(.gold){background:var(--gold);border-color:var(--gold);color:#fff}
+
+/* ── cursor ── */
+html[data-theme="light"] #cur{background:var(--gold);mix-blend-mode:multiply}
+html[data-theme="light"] #cur-ring{border-color:rgba(168,120,58,0.35)}
+
+/* ── hero ── */
+html[data-theme="light"] .hero{background:var(--void)}
+html[data-theme="light"] .hero::before{background:radial-gradient(ellipse at center,rgba(168,120,58,0.07) 0%,transparent 70%)}
+html[data-theme="light"] .hero::after{background-image:linear-gradient(rgba(14,12,8,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(14,12,8,0.06) 1px,transparent 1px);background-size:80px 80px}
+html[data-theme="light"] .hero-eye{color:var(--gold)}
+html[data-theme="light"] .hero-h{color:var(--white)}
+html[data-theme="light"] .hero-sub{color:var(--muted)}
+html[data-theme="light"] .m-b{background:rgba(237,233,226,0.92);border-color:var(--border-b)}
+html[data-theme="light"] .m-n{color:var(--gold)}
+html[data-theme="light"] .scroll-hint{color:var(--faint)}
+html[data-theme="light"] .s-line{background:linear-gradient(var(--gold),transparent)}
+
+/* ── marquee ── */
+html[data-theme="light"] .mq-wrap{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .mq-i{color:var(--faint)}
+
+/* ── section labels & heads ── */
+html[data-theme="light"] .s-label{color:var(--gold)}
+html[data-theme="light"] .s-head{color:var(--white)}
+
+/* ── stat blocks ── */
+html[data-theme="light"] .ab{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .ab:hover{background:var(--surface2)}
+html[data-theme="light"] .ab-n{color:var(--gold)}
+html[data-theme="light"] .ab-d{color:var(--muted)}
+
+/* ── how / steps ── */
+html[data-theme="light"] .s-how{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .steps-g{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .step{background:var(--surface)}
+html[data-theme="light"] .step:hover{background:var(--surface2)}
+html[data-theme="light"] .step-n{color:var(--gold)}
+html[data-theme="light"] .step-t{color:var(--white)}
+html[data-theme="light"] .step-d{color:var(--muted)}
+html[data-theme="light"] .step-ico{border-color:var(--border-b);color:var(--gold)}
+html[data-theme="light"] .how-note{color:var(--muted)}
+
+/* ── PowerPoint plugin mock ── */
+html[data-theme="light"] .ppt-shell{border-color:var(--border-b);box-shadow:0 36px 90px rgba(0,0,0,0.12)}
+html[data-theme="light"] .ppt-tb{background:#e8e4dd;border-color:var(--border)}
+html[data-theme="light"] .ppt-dots span{background:rgba(14,12,8,0.15)}
+html[data-theme="light"] .ppt-ti{color:var(--muted)}
+html[data-theme="light"] .ppt-c{background:#d8d4ce}
+/* slide visual inside stays intentionally "white slide" look — fine in both modes */
+/* slydr panel in light */
+html[data-theme="light"] .s-panel{background:#f0ece5;border-color:var(--border)}
+html[data-theme="light"] .ph{border-color:var(--border)}
+html[data-theme="light"] .ph-n{color:var(--gold)}
+html[data-theme="light"] .p-srch{background:var(--surface2);border-color:var(--border-b)}
+html[data-theme="light"] .p-srch input{color:var(--white)}
+html[data-theme="light"] .p-srch input::placeholder{color:var(--faint)}
+html[data-theme="light"] .pt{background:var(--surface2);border-color:var(--border)}
+html[data-theme="light"] .pt.hot{border-color:var(--gold)}
+html[data-theme="light"] .pt-in{background:#c8c2b8}
+html[data-theme="light"] .pt-bar{background:rgba(168,120,58,0.5)}
+html[data-theme="light"] .pt-m{color:var(--faint)}
+html[data-theme="light"] .pt-ins{background:var(--gold);color:#fff}
+html[data-theme="light"] .p-count{color:var(--faint);border-color:var(--border)}
+
+/* ── early access / pilot cards ── */
+html[data-theme="light"] .s-testi{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .testi-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .t-card{background:var(--surface)}
+html[data-theme="light"] .t-card:hover{background:var(--surface2)}
+html[data-theme="light"] .t-quote{color:var(--muted)}
+html[data-theme="light"] .t-author{color:var(--gold)}
+html[data-theme="light"] .t-role{color:var(--faint)}
+
+/* ── enterprise features ── */
+html[data-theme="light"] .feat-item{border-color:var(--border)}
+html[data-theme="light"] .feat-item:hover{background:var(--surface2)}
+html[data-theme="light"] .feat-ico{border-color:var(--border-b);color:var(--gold)}
+html[data-theme="light"] .feat-label{color:var(--white)}
+html[data-theme="light"] .feat-desc{color:var(--muted)}
+html[data-theme="light"] .ent-visual{background:var(--surface2);border-color:var(--border)}
+html[data-theme="light"] .ev-row{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .ev-label{color:var(--white)}
+html[data-theme="light"] .ev-tag{color:var(--gold);border-color:rgba(168,120,58,0.25)}
+html[data-theme="light"] .ev-tag.grey{color:var(--muted);border-color:var(--border)}
+html[data-theme="light"] .ev-dot{background:var(--gold)}
+html[data-theme="light"] .ev-dot.grey{background:var(--faint)}
+
+/* ── quote strip ── */
+html[data-theme="light"] .s-qstrip{background:var(--surface);border-top:1px solid var(--border)}
+html[data-theme="light"] .q-mark{color:rgba(168,120,58,0.1)}
+html[data-theme="light"] .q-txt{color:var(--white)}
+html[data-theme="light"] .q-attr{color:var(--muted)}
+html[data-theme="light"] .q-attr::before,.q-attr::after{background:var(--border-b)}
+
+/* ── waitlist section ── */
+html[data-theme="light"] .s-waitlist{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .wl-pill{border-color:rgba(168,120,58,0.25)}
+html[data-theme="light"] .wl-pill-dot{background:var(--gold)}
+html[data-theme="light"] .wl-pill-txt{color:var(--gold)}
+html[data-theme="light"] .wl-form{background:var(--void);border-color:var(--border-b)}
+html[data-theme="light"] .wl-note{color:var(--faint)}
+html[data-theme="light"] .wl-copy p{color:var(--muted)}
+
+/* ── CTA section ── */
+html[data-theme="light"] .s-cta{background:var(--void)}
+html[data-theme="light"] .s-cta::before{background:radial-gradient(ellipse,rgba(168,120,58,0.08) 0%,transparent 70%)}
+html[data-theme="light"] .cta-h{color:var(--white)}
+html[data-theme="light"] .cta-sub{color:var(--muted)}
+html[data-theme="light"] .cta-ol{color:var(--gold)}
+html[data-theme="light"] .cta-fine{color:var(--faint)}
+
+/* ── modals ── */
+html[data-theme="light"] .modal-backdrop{background:rgba(220,215,206,0.9)}
+html[data-theme="light"] .modal-box{background:var(--void);box-shadow:0 48px 120px rgba(0,0,0,0.18);border-color:var(--border-b)}
+html[data-theme="light"] .modal-close{border-color:var(--border);color:var(--muted)}
+html[data-theme="light"] .modal-close:hover{border-color:var(--border-b);color:var(--white)}
+html[data-theme="light"] .modal-eyebrow{color:var(--gold)}
+html[data-theme="light"] .modal-title{color:var(--white)}
+html[data-theme="light"] .modal-sub{color:var(--muted)}
+html[data-theme="light"] .modal-divider{background:var(--border)}
+
+/* ── forms ── */
+html[data-theme="light"] .f-label{color:var(--muted)}
+html[data-theme="light"] .f-input,html[data-theme="light"] .f-select,html[data-theme="light"] .f-textarea{background:var(--surface2);border-color:var(--border);color:var(--white)}
+html[data-theme="light"] .f-input:focus,html[data-theme="light"] .f-select:focus,html[data-theme="light"] .f-textarea:focus{border-color:var(--gold)}
+html[data-theme="light"] .f-input::placeholder,html[data-theme="light"] .f-textarea::placeholder{color:var(--faint)}
+html[data-theme="light"] .f-select option{background:var(--surface2);color:var(--white)}
+html[data-theme="light"] .calendly-row{background:var(--surface2);border-color:var(--border)}
+html[data-theme="light"] .calendly-label{color:var(--white)}
+html[data-theme="light"] .calendly-sub{color:var(--muted)}
+html[data-theme="light"] .success-title{color:var(--white)}
+html[data-theme="light"] .success-sub{color:var(--muted)}
+html[data-theme="light"] .success-ico{border-color:var(--gold);color:var(--gold)}
+
+/* ── inquiry type selector ── */
+html[data-theme="light"] .iq-opt{border-color:var(--border)}
+html[data-theme="light"] .iq-opt:hover{border-color:var(--border-b)}
+html[data-theme="light"] .iq-opt.selected{border-color:var(--gold);background:rgba(168,120,58,0.08)}
+html[data-theme="light"] .iq-label{color:var(--muted)}
+html[data-theme="light"] .iq-opt.selected .iq-label{color:var(--white)}
+
+/* ── notification toast ── */
+html[data-theme="light"] .notif{background:var(--surface2);border-color:var(--border-b);box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+html[data-theme="light"] .notif-txt{color:var(--white)}
+html[data-theme="light"] .notif-dot{background:var(--gold)}
+
+/* ── features page ── */
+html[data-theme="light"] .feat-hero{background:var(--void)}
+html[data-theme="light"] .feat-hero::before{background:radial-gradient(ellipse,rgba(168,120,58,0.05) 0%,transparent 70%)}
+html[data-theme="light"] .big-feat-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .bf{background:var(--surface)}
+html[data-theme="light"] .bf:hover{background:var(--surface2)}
+html[data-theme="light"] .bf-t{color:var(--white)}
+html[data-theme="light"] .bf-d{color:var(--muted)}
+html[data-theme="light"] .bf-ico{border-color:var(--border-b);color:var(--gold)}
+html[data-theme="light"] .bf-tag{color:var(--gold);border-color:rgba(168,120,58,0.25)}
+
+/* ── pricing page ── */
+html[data-theme="light"] .price-hero{background:var(--void)}
+html[data-theme="light"] .price-subtitle{color:var(--muted)}
+html[data-theme="light"] .price-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .pc{background:var(--surface)}
+html[data-theme="light"] .pc.featured{background:linear-gradient(160deg,rgba(168,120,58,0.09),rgba(168,120,58,0.03))}
+html[data-theme="light"] .pc-plan{color:var(--gold)}
+html[data-theme="light"] .pc-price{color:var(--white)}
+html[data-theme="light"] .pc-desc{color:var(--muted);border-color:var(--border)}
+html[data-theme="light"] .pc-feat{color:var(--muted)}
+html[data-theme="light"] .pc-feat::before{color:var(--gold)}
+html[data-theme="light"] .pc-feat.muted{color:var(--faint)}
+html[data-theme="light"] .price-note{color:var(--muted)}
+html[data-theme="light"] .faq-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .faq-item{background:var(--surface)}
+html[data-theme="light"] .faq-item:hover{background:var(--surface2)}
+html[data-theme="light"] .faq-q{color:var(--white)}
+html[data-theme="light"] .faq-a{color:var(--muted)}
+
+/* ── about page ── */
+html[data-theme="light"] .about-hero{background:var(--void)}
+html[data-theme="light"] .about-p{color:var(--muted)}
+html[data-theme="light"] .manifesto{border-color:var(--gold)}
+html[data-theme="light"] .manifesto p{color:var(--white)}
+html[data-theme="light"] .values-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .val{background:var(--surface)}
+html[data-theme="light"] .val:hover{background:var(--surface2)}
+html[data-theme="light"] .val-t{color:var(--white)}
+html[data-theme="light"] .val-d{color:var(--muted)}
+html[data-theme="light"] .stack-grid{background:var(--border);border-color:var(--border)}
+html[data-theme="light"] .stack-item{background:var(--surface)}
+html[data-theme="light"] .stack-item:hover{background:var(--surface2)}
+html[data-theme="light"] .stack-name{color:var(--white)}
+html[data-theme="light"] .stack-role{color:var(--muted)}
+
+/* ── contact page ── */
+html[data-theme="light"] .contact-hero{background:var(--void)}
+html[data-theme="light"] .ci{border-color:var(--border)}
+html[data-theme="light"] .ci:hover{background:var(--surface2)}
+html[data-theme="light"] .ci-ico{border-color:var(--border-b);color:var(--gold)}
+html[data-theme="light"] .ci-label{color:var(--gold)}
+html[data-theme="light"] .ci-val{color:var(--white)}
+
+/* ── footer ── */
+html[data-theme="light"] .site-footer{background:var(--surface);border-color:var(--border)}
+html[data-theme="light"] .footer-top{background:var(--surface)}
+html[data-theme="light"] .footer-bottom{border-color:var(--border)}
+html[data-theme="light"] .foot-logo{color:var(--white)}
+html[data-theme="light"] .foot-tagline{color:var(--muted)}
+html[data-theme="light"] .foot-col h4{color:var(--gold)}
+html[data-theme="light"] .foot-col ul li a{color:var(--muted)}
+html[data-theme="light"] .foot-col ul li a:hover{color:var(--white)}
+html[data-theme="light"] .foot-copy{color:var(--faint)}
+html[data-theme="light"] .foot-legal a{color:var(--faint)}
+html[data-theme="light"] .foot-legal a:hover{color:var(--muted)}
+html[data-theme="light"] .soc-btn{border-color:var(--border);color:var(--muted)}
+html[data-theme="light"] .soc-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── vs / diff tables ── */
+html[data-theme="light"] .vs-table{border-color:var(--border)}
+html[data-theme="light"] .vs-row{border-color:var(--border)}
+html[data-theme="light"] .vs-row.hdr .vs-cell{background:var(--surface2);color:var(--faint)}
+html[data-theme="light"] .vs-row.hdr .vs-cell.hl{background:rgba(168,120,58,0.1);color:var(--gold)}
+html[data-theme="light"] .vs-cell{border-color:var(--border);color:var(--muted)}
+html[data-theme="light"] .vs-feat{color:var(--white)}
+html[data-theme="light"] .vs-y{color:var(--gold)}
+
+/* ── ghost links & secondary buttons ── */
+html[data-theme="light"] .ghost-link{color:var(--muted)}
+html[data-theme="light"] .ghost-link:hover{color:var(--white)}
+html[data-theme="light"] .btn-outline{border-color:var(--border-b);color:var(--white)}
+html[data-theme="light"] .btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+html[data-theme="light"] .cta-ghost-btn{color:var(--muted)}
+html[data-theme="light"] .cta-ghost-btn:hover{color:var(--white)}
+html[data-theme="light"] .cta-sep{background:var(--border-b)}
+
+/* ── nav active / hover link ── */
+html[data-theme="light"] .nav-center li a:hover,
+html[data-theme="light"] .nav-center li a.active-link{color:var(--white)}
+
+/* ── PowerPoint ribbon — stays blue but text must be readable ── */
+html[data-theme="light"] .ppt-ribbon{background:#2e5fa3}
+html[data-theme="light"] .r-tab{color:rgba(255,255,255,0.65)}
+html[data-theme="light"] .r-tab.on{color:#fff;background:rgba(255,255,255,0.15)}
+
+/* ── slydr plugin panel — keep dark in both modes for realism ── */
+html[data-theme="light"] .s-panel{background:#1a1814}
+html[data-theme="light"] .ph{border-color:rgba(255,255,255,0.08)}
+html[data-theme="light"] .ph-n{color:#c9a96e}
+html[data-theme="light"] .p-srch{background:#242018;border-color:rgba(255,255,255,0.1)}
+html[data-theme="light"] .p-srch input{color:#f0ede8}
+html[data-theme="light"] .p-srch input::placeholder{color:rgba(240,237,232,0.3)}
+html[data-theme="light"] .pt{background:#1e1c18;border-color:rgba(255,255,255,0.08)}
+html[data-theme="light"] .pt.hot{border-color:#c9a96e}
+html[data-theme="light"] .pt-m{color:rgba(240,237,232,0.35)}
+html[data-theme="light"] .pt-ins{background:#c9a96e;color:#1a1610}
+html[data-theme="light"] .p-count{color:rgba(240,237,232,0.3);border-color:rgba(255,255,255,0.06)}
+
+/* ── m-b backdrop ── */
+html[data-theme="light"] .m-b{background:rgba(237,233,226,0.95);backdrop-filter:blur(14px)}
+
+/* ── wl-form: stays slightly dark for contrast on light section bg ── */
+html[data-theme="light"] .wl-form{background:var(--surface2);border-color:var(--border-b)}
+
+/* ── s-ent section ── */
+html[data-theme="light"] .s-ent{background:var(--void)}
+
+/* ── sections that inherit body bg — ensure readable text ── */
+html[data-theme="light"] .s-problem{background:var(--void)}
+html[data-theme="light"] .s-plugin{background:var(--void)}
+
+/* ── pl-copy text ── */
+html[data-theme="light"] .pl-p{color:var(--muted)}
+html[data-theme="light"] .pl-fine{color:var(--faint)}
+
+/* ── hero actions secondary text ── */
+html[data-theme="light"] .cta-secondary{color:var(--muted)}
+
+/* ── about page inline text ── */
+html[data-theme="light"] .about-intro-grid p{color:var(--muted)}
+
+/* ── pricing description text ── */
+html[data-theme="light"] .price-subtitle{color:var(--muted)}
+html[data-theme="light"] .price-note{color:var(--muted)}
+
+/* ── theme toggle ── */
+html[data-theme="light"] .theme-toggle{border-color:var(--border-b);color:var(--white)}
+html[data-theme="light"] .theme-toggle:hover{border-color:var(--gold);background:rgba(168,120,58,0.08)}
+html[data-theme="light"] .theme-toggle .ico-moon{opacity:0;transform:rotate(-90deg) scale(0.7)}
+html[data-theme="light"] .theme-toggle .ico-sun{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-toggle{
+  width:38px;height:38px;border:1px solid rgba(240,237,232,0.28);
+  background:rgba(240,237,232,0.04);color:var(--white);cursor:none;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .25s,background .25s;
+  flex-shrink:0;position:relative;
+}
+.theme-toggle:hover{border-color:var(--gold);background:var(--gold-d);color:var(--gold)}
+.theme-toggle svg{position:absolute;transition:opacity .3s,transform .3s}
+.theme-toggle .ico-moon{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-toggle .ico-sun{opacity:0;transform:rotate(90deg) scale(0.7)}
+html[data-theme="light"] .theme-toggle .ico-moon{opacity:0;transform:rotate(-90deg) scale(0.7)}
+html[data-theme="light"] .theme-toggle .ico-sun{opacity:1;transform:rotate(0deg) scale(1)}
+
+/* ─── THEME TRANSITION ─── */
+html{transition:background .35s ease,color .35s ease}
+body,nav,.hero,.modal-box,.ppt-shell,.site-footer,
+.ab,.step,.t-card,.bf,.pc,.val,.stack-item,.feat-item,
+.ent-visual,.ev-row,.wl-form,.mq-wrap,.s-how,.s-testi,
+.s-vs,.s-qstrip,.s-cta,.s-waitlist,.s-plugin,.s-problem,.s-ent{
+  transition:background .35s ease,border-color .35s ease,color .35s ease;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--white);font-family:var(--sans);font-size:16px;line-height:1.6;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
+
+/* ─── CURSOR ─── */
+#cur{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
+#cur-ring{position:fixed;width:38px;height:38px;border:1px solid rgba(201,169,110,0.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s cubic-bezier(.25,.46,.45,.94),height .3s,border-color .3s}
+body:has(a:hover) #cur,body:has(button:hover) #cur{width:13px;height:13px}
+body:has(a:hover) #cur-ring,body:has(button:hover) #cur-ring{width:56px;height:56px;border-color:rgba(201,169,110,0.14)}
+
+/* ─── PAGE ROUTER ─── */
+.page{display:none}
+.page.active{display:block}
+
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:26px 64px;display:flex;align-items:center;justify-content:space-between;transition:background .5s,padding .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(24px);border-bottom-color:var(--border)}
+.nav-logo{font-family:var(--serif);font-size:22px;font-weight:300;letter-spacing:0.09em;color:var(--white);text-decoration:none;cursor:none}
+.nav-logo sup{color:var(--gold);font-size:8px;letter-spacing:0.2em;vertical-align:super;font-family:var(--sans)}
+.nav-center{display:flex;gap:36px;list-style:none;align-items:center}
+.nav-center li a{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:none;transition:color .25s;padding:4px 0;position:relative}
+.nav-center li a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav-center li a:hover,.nav-center li a.active-link{color:var(--white)}
+.nav-center li a:hover::after,.nav-center li a.active-link::after{transform:scaleX(1)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-btn{border:1px solid var(--border-b);background:transparent;color:var(--white);padding:9px 22px;font-family:var(--sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:none;transition:background .25s,border-color .25s,color .25s}
+.nav-btn:hover,.nav-btn.gold{background:var(--gold);border-color:var(--gold);color:var(--void)}
+.nav-btn.ghost{color:var(--muted);border-color:var(--border)}
+.nav-btn.ghost:hover{color:var(--white);border-color:var(--border-b)}
+
+/* ─── SHARED HELPERS ─── */
+.container{max-width:1240px;margin:0 auto;padding:0 64px}
+.s-label{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.s-label::before{content:'';width:18px;height:1px;background:var(--gold);opacity:.6}
+.s-head{font-family:var(--serif);font-weight:300;font-size:clamp(36px,5vw,62px);line-height:1.04;letter-spacing:-0.02em;color:var(--white)}
+.s-head em{font-style:italic;color:var(--gold)}
+.btn-gold{background:var(--gold);color:var(--void);border:none;padding:15px 34px;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;cursor:none;transition:background .25s,transform .2s,box-shadow .25s;box-shadow:0 0 36px rgba(201,169,110,0.18)}
+.btn-gold:hover{background:#dbbe86;transform:translateY(-2px);box-shadow:0 6px 40px rgba(201,169,110,0.32)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--border-b);padding:15px 34px;font-family:var(--sans);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:none;transition:all .25s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}.rd4{transition-delay:.4s}
+
+/* ─── MODAL OVERLAY ─── */
+.modal-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-backdrop{position:absolute;inset:0;background:rgba(4,4,4,0.88);backdrop-filter:blur(18px)}
+.modal-box{position:relative;z-index:1;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border-b);box-shadow:0 48px 120px rgba(0,0,0,0.7);transform:translateY(24px) scale(0.97);transition:transform .38s cubic-bezier(.25,.46,.45,.94)}
+.modal-overlay.open .modal-box{transform:translateY(0) scale(1)}
+.modal-header{padding:36px 40px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.modal-close{width:32px;height:32px;border:1px solid var(--border);background:none;color:var(--muted);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:none;transition:border-color .2s,color .2s;flex-shrink:0;margin-top:4px;line-height:1}
+.modal-close:hover{border-color:var(--border-b);color:var(--white)}
+.modal-body{padding:28px 40px 40px}
+.modal-eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.modal-eyebrow::before{content:'';width:14px;height:1px;background:var(--gold);opacity:.6}
+.modal-title{font-family:var(--serif);font-size:clamp(26px,3.5vw,36px);font-weight:300;line-height:1.1;letter-spacing:-0.02em;color:var(--white);margin-bottom:8px}
+.modal-title em{font-style:italic;color:var(--gold)}
+.modal-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.modal-divider{height:1px;background:var(--border);margin:24px 0}
+
+/* ─── FORM SHARED ─── */
+.f-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.f-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.f-input,.f-select,.f-textarea{background:var(--surface2);border:1px solid var(--border);color:var(--white);padding:12px 16px;font-family:var(--sans);font-size:13px;width:100%;outline:none;transition:border-color .25s;-webkit-appearance:none;border-radius:0}
+.f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--gold)}
+.f-input.err,.f-select.err,.f-textarea.err{border-color:rgba(220,80,60,0.6)}
+.f-input::placeholder,.f-textarea::placeholder{color:var(--faint)}
+.f-select option{background:var(--surface2);color:var(--white)}
+.f-textarea{min-height:100px;resize:vertical}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f-err-msg{font-size:11px;color:rgba(220,100,80,0.9);margin-top:3px;display:none}
+.f-err-msg.show{display:block}
+
+/* form states */
+.form-loading{pointer-events:none;opacity:.7}
+.form-success{display:none;text-align:center;padding:40px 20px}
+.form-success.show{display:block}
+.success-ico{width:52px;height:52px;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--gold)}
+.success-title{font-family:var(--serif);font-size:28px;font-weight:300;color:var(--white);margin-bottom:10px}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* calendly row */
+.calendly-row{border:1px solid var(--border);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;background:var(--surface2)}
+.calendly-label{font-size:13px;color:var(--white)}
+.calendly-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.btn-calendly{background:none;border:1px solid var(--gold);color:var(--gold);padding:9px 20px;font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .25s,color .25s;white-space:nowrap;flex-shrink:0}
+.btn-calendly:hover{background:var(--gold);color:var(--void)}
+
+/* ─── WAITLIST SECTION ─── */
+.s-waitlist{padding:120px 0;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.wl-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.wl-copy p{font-size:15px;color:var(--muted);line-height:1.85;margin-bottom:16px}
+.wl-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--gold-d);padding:6px 14px;margin-bottom:28px}
+.wl-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.wl-pill-txt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.wl-form{border:1px solid var(--border);background:var(--void);padding:40px}
+.wl-inline{display:flex;gap:0}
+.wl-inline .f-input{flex:1;border-right:none}
+.wl-inline .btn-gold{white-space:nowrap;padding:12px 24px;font-size:11px}
+.wl-note{font-size:11px;color:var(--faint);margin-top:12px;letter-spacing:.04em}
+
+/* ─── CTA HIERARCHY ─── */
+.cta-trio{display:flex;flex-direction:column;align-items:center;gap:14px}
+.cta-trio .btn-gold{min-width:220px;text-align:center}
+.cta-secondary{display:flex;align-items:center;gap:20px}
+.cta-sep{width:1px;height:16px;background:var(--border-b)}
+.cta-ghost-btn{background:none;border:none;font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:none;transition:color .25s;padding:0}
+.cta-ghost-btn:hover{color:var(--white)}
+
+/* ─── INLINE NOTIFICATION ─── */
+.notif{position:fixed;bottom:32px;right:32px;z-index:600;border:1px solid var(--border-b);background:var(--surface2);padding:16px 22px;display:flex;align-items:center;gap:14px;max-width:340px;transform:translateY(16px);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none}
+.notif.show{opacity:1;transform:translateY(0);pointer-events:all}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.notif-txt{font-size:13px;color:var(--white);line-height:1.5}
+
+/* ─── CONTACT PAGE REFACTOR ─── */
+.inquiry-type{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px}
+.iq-opt{border:1px solid var(--border);padding:12px 16px;cursor:none;transition:border-color .2s,background .2s;display:flex;align-items:center;gap:10px}
+.iq-opt:hover{border-color:var(--border-b)}
+.iq-opt.selected{border-color:var(--gold);background:var(--gold-d)}
+.iq-dot{width:6px;height:6px;border-radius:50%;border:1px solid var(--muted);transition:background .2s,border-color .2s;flex-shrink:0}
+.iq-opt.selected .iq-dot{background:var(--gold);border-color:var(--gold)}
+.iq-label{font-size:12px;letter-spacing:.06em;color:var(--muted);transition:color .2s}
+.iq-opt.selected .iq-label{color:var(--white)}
+
+/* ─────────────────────────────────────── */
+/*  PAGE: HOME                             */
+/* ─────────────────────────────────────── */
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:160px 64px 100px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:-8%;top:38%;width:860px;height:620px;background:radial-gradient(ellipse at center,rgba(201,169,110,0.055) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 40% 50%,black 20%,transparent 100%);pointer-events:none}
+.hero-eye{display:inline-flex;align-items:center;gap:14px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:38px;opacity:0;animation:fadeUp .8s .1s ease forwards}
+.hero-eye::before{content:'';width:28px;height:1px;background:var(--gold);opacity:.6}
+.hero-h{font-family:var(--serif);font-weight:300;font-size:clamp(58px,8.5vw,116px);line-height:.94;letter-spacing:-0.025em;color:var(--white);margin-bottom:34px;opacity:0;animation:fadeUp .9s .22s ease forwards}
+.hero-h em{font-style:italic;color:var(--gold)}
+.hero-h .l2{display:block;padding-left:clamp(48px,7vw,96px)}
+.hero-sub{font-size:17px;font-weight:300;color:var(--muted);line-height:1.82;max-width:460px;margin-bottom:52px;opacity:0;animation:fadeUp .9s .38s ease forwards}
+.hero-acts{display:flex;align-items:center;gap:26px;opacity:0;animation:fadeUp .9s .52s ease forwards}
+.ghost-link{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px;text-decoration:none;cursor:none;transition:color .25s}
+.ghost-link:hover{color:var(--white)}
+.arr{width:30px;height:1px;background:currentColor;position:relative;display:inline-block;transition:width .25s;vertical-align:middle}
+.ghost-link:hover .arr{width:42px}
+.arr::after{content:'';position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg)}
+
+.hero-metrics{position:absolute;right:64px;bottom:90px;display:flex;flex-direction:column;gap:10px;opacity:0;animation:fadeLeft 1s .8s ease forwards}
+.m-b{border:1px solid var(--border-b);background:rgba(15,15,15,0.85);backdrop-filter:blur(14px);padding:15px 22px;display:flex;align-items:baseline;gap:10px}
+.m-n{font-family:var(--serif);font-size:30px;font-weight:300;color:var(--gold);letter-spacing:-0.02em}
+.m-l{font-size:11px;color:var(--muted);letter-spacing:0.05em}
+
+.scroll-hint{position:absolute;bottom:38px;left:64px;display:flex;align-items:center;gap:14px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--faint);opacity:0;animation:fadeUp 1s 1.3s ease forwards}
+.s-line{width:1px;height:38px;background:linear-gradient(var(--gold),transparent);animation:sp 2.2s ease-in-out infinite}
+@keyframes sp{0%,100%{opacity:.25}50%{opacity:1}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeLeft{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+
+/* MARQUEE */
+.mq-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0;overflow:hidden;background:var(--surface)}
+.mq-track{display:flex;gap:56px;animation:mq 26s linear infinite;width:max-content}
+.mq-i{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap;display:flex;align-items:center;gap:18px}
+.mq-i::after{content:'·';color:var(--gold);font-size:16px}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* PROBLEM */
+.s-problem{padding:130px 0}
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:start}
+.pb-txt{font-size:16px;font-weight:300;color:var(--muted);line-height:1.85;margin-bottom:20px}
+.prob-aside{display:flex;flex-direction:column;gap:1px;border:1px solid var(--border)}
+.ab{padding:38px 34px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;transition:background .3s}
+.ab:last-child{border-bottom:none}
+.ab:hover{background:var(--surface2)}
+.ab-glow{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}
+.ab:hover .ab-glow{opacity:.55}
+.ab-n{font-family:var(--serif);font-size:50px;font-weight:300;color:var(--gold);letter-spacing:-0.04em;line-height:1;margin-bottom:10px}
+.ab-d{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* HOW */
+.s-how{padding:130px 0;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:72px;gap:40px}
+.how-note{max-width:300px;font-size:14px;font-weight:300;color:var(--muted);line-height:1.8;text-align:right}
+.steps-g{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.step{background:var(--surface);padding:46px 34px;position:relative;overflow:hidden;transition:background .3s}
+.step:hover{background:var(--surface2)}
+.step-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.25,.46,.45,.94)}
+.step:hover .step-bar{transform:scaleX(1)}
+.step-n{font-size:10px;letter-spacing:0.16em;color:var(--gold);margin-bottom:42px;display:block}
+.step-ico{width:38px;height:38px;margin-bottom:26px;border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.step-t{font-family:var(--serif);font-size:21px;font-weight:400;color:var(--white);margin-bottom:12px;letter-spacing:-0.01em;line-height:1.2}
+.step-d{font-size:13px;color:var(--muted);line-height:1.75;font-weight:300}
+
+/* PLUGIN SECTION */
+.s-plugin{padding:130px 0}
+.pl-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.pl-p{font-size:15px;color:var(--muted);line-height:1.85;margin-bottom:16px}
+.pl-fine{font-size:11px;letter-spacing:0.07em;color:var(--faint);text-transform:uppercase;margin-top:14px}
+.ppt-shell{border:1px solid var(--border-b);background:var(--surface2);box-shadow:0 36px 90px rgba(0,0,0,0.55),0 0 0 1px var(--border);overflow:hidden}
+.ppt-tb{background:#1e1e1e;border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;justify-content:space-between}
+.ppt-dots{display:flex;gap:5px}
+.ppt-dots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.08)}
+.ppt-ti{font-size:10px;color:var(--muted);letter-spacing:0.06em}
+.ppt-ribbon{background:#2b579a;padding:7px 14px;display:flex;gap:18px;border-bottom:1px solid rgba(0,0,0,.3)}
+.r-tab{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.06em;padding:3px 7px;cursor:none}
+.r-tab.on{background:rgba(255,255,255,.12);color:#fff}
+.ppt-body{display:grid;grid-template-columns:1fr 188px;min-height:300px}
+.ppt-c{background:#f0f0f0;display:flex;align-items:center;justify-content:center}
+.slide-v{width:86%;aspect-ratio:16/9;background:#fff;box-shadow:0 3px 16px rgba(0,0,0,.14);padding:18px;display:flex;flex-direction:column;gap:7px}
+.sv-t{height:9px;background:#1a1a2e;border-radius:2px;width:52%}
+.sv-l{height:5px;background:#e8e8e8;border-radius:2px}
+.sv-ch{flex:1;margin-top:3px;background:linear-gradient(135deg,#f8f8ff,#eef2ff);border-radius:2px;display:flex;align-items:flex-end;padding:6px;gap:3px}
+.sv-b{flex:1;background:#2b579a;border-radius:2px 2px 0 0;transition:height .6s ease}
+.s-panel{border-left:1px solid var(--border);background:var(--void);display:flex;flex-direction:column}
+.ph{padding:9px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph-n{font-family:var(--serif);font-size:12px;color:var(--gold);letter-spacing:.06em}
+.p-srch{margin:9px;border:1px solid var(--border-b);background:var(--surface);display:flex;align-items:center;gap:5px;padding:6px 9px}
+.p-srch input{background:none;border:none;outline:none;font-size:9px;color:var(--white);font-family:var(--sans);width:100%;letter-spacing:.04em}
+.p-srch input::placeholder{color:var(--faint)}
+.p-res{padding:5px;display:flex;flex-direction:column;gap:5px;flex:1;overflow:hidden}
+.pt{border:1px solid var(--border);background:var(--surface2);padding:7px;cursor:none;transition:border-color .2s;position:relative;overflow:hidden}
+.pt.hot{border-color:var(--gold)}
+.pt-in{aspect-ratio:16/9;background:#111827;margin-bottom:4px;display:flex;align-items:flex-end;padding:3px;gap:2px}
+.pt-bar{background:rgba(201,169,110,0.38);border-radius:1px 1px 0 0}
+.pt-m{font-size:7px;color:var(--faint);letter-spacing:.05em}
+.pt-ins{position:absolute;top:3px;right:3px;background:var(--gold);color:var(--void);font-size:6px;letter-spacing:.08em;text-transform:uppercase;padding:2px 5px;opacity:0;transition:opacity .2s;font-family:var(--sans)}
+.pt.hot .pt-ins{opacity:1}
+.p-count{padding:7px 10px;border-top:1px solid var(--border);font-size:8px;color:var(--faint);letter-spacing:.06em;text-align:right}
+
+/* TESTIMONIALS */
+.s-testi{padding:130px 0;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:64px}
+.t-card{background:var(--surface);padding:44px 36px;position:relative;overflow:hidden;transition:background .3s}
+.t-card:hover{background:var(--surface2)}
+.t-quote{font-family:var(--serif);font-size:15px;font-weight:300;color:var(--white);line-height:1.75;margin-bottom:28px;font-style:italic}
+.t-author{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.t-role{font-size:11px;color:var(--muted);margin-top:3px}
+.t-stars{display:flex;gap:4px;margin-bottom:18px}
+.t-stars span{color:var(--gold);font-size:12px}
+
+/* ENTERPRISE */
+.s-ent{padding:130px 0}
+.ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:64px}
+.feat-list{display:flex;flex-direction:column;gap:1px}
+.feat-item{border:1px solid var(--border);border-bottom:none;padding:26px 30px;display:flex;align-items:flex-start;gap:18px;transition:background .3s;position:relative;overflow:hidden}
+.feat-item:last-child{border-bottom:1px solid var(--border)}
+.feat-item:hover{background:var(--surface2)}
+.feat-ico{width:34px;height:34px;border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;margin-top:2px}
+.feat-label{font-size:14px;font-weight:400;color:var(--white);margin-bottom:5px}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.ent-visual{border:1px solid var(--border);background:var(--surface2);padding:40px;display:flex;flex-direction:column;gap:16px}
+.ev-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1px solid var(--border);background:var(--surface)}
+.ev-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.ev-dot.grey{background:rgba(240,237,232,0.15)}
+.ev-label{font-size:13px;color:var(--white)}
+.ev-tag{margin-left:auto;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-d);padding:3px 10px}
+.ev-tag.grey{color:var(--muted);border-color:var(--border)}
+
+/* QUOTE STRIP */
+.s-qstrip{padding:140px 0;background:var(--void)}
+.q-inner{max-width:880px;margin:0 auto;text-align:center;position:relative}
+.q-mark{font-family:var(--serif);font-size:160px;line-height:.5;color:rgba(201,169,110,0.07);position:absolute;top:0;left:-10px;pointer-events:none}
+.q-txt{font-family:var(--serif);font-size:clamp(24px,3.2vw,42px);font-weight:300;line-height:1.35;letter-spacing:-0.01em;color:var(--white);margin-bottom:36px;position:relative;z-index:1}
+.q-txt em{font-style:italic;color:var(--gold)}
+.q-attr{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:20px}
+.q-attr::before,.q-attr::after{content:'';width:36px;height:1px;background:var(--border-b)}
+
+/* CTA BAND */
+.s-cta{padding:150px 0;text-align:center;position:relative;overflow:hidden}
+.s-cta::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:680px;height:480px;background:radial-gradient(ellipse,rgba(201,169,110,0.07) 0%,transparent 70%);pointer-events:none}
+.cta-in{position:relative;z-index:1;max-width:580px;margin:0 auto}
+.cta-ol{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;justify-content:center;gap:14px}
+.cta-ol::before,.cta-ol::after{content:'';width:22px;height:1px;background:var(--gold);opacity:.5}
+.cta-h{font-family:var(--serif);font-size:clamp(38px,5.5vw,70px);font-weight:300;letter-spacing:-0.025em;line-height:1.04;color:var(--white);margin-bottom:18px}
+.cta-h em{font-style:italic;color:var(--gold)}
+.cta-sub{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;margin-bottom:44px}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta-fine{margin-top:18px;font-size:11px;color:var(--faint);letter-spacing:.06em}
+
+/* ─────────────────────────────────────── */
+/*  PAGE: FEATURES                         */
+/* ─────────────────────────────────────── */
+.feat-hero{padding:160px 64px 100px;position:relative;overflow:hidden}
+.feat-hero::before{content:'';position:absolute;right:-5%;top:30%;width:700px;height:500px;background:radial-gradient(ellipse,rgba(201,169,110,0.05) 0%,transparent 70%);pointer-events:none}
+.feat-hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 60% 40%,black 20%,transparent 100%);pointer-events:none}
+.big-feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:80px}
+.bf{background:var(--surface);padding:56px 48px;position:relative;overflow:hidden;transition:background .3s}
+.bf:hover{background:var(--surface2)}
+.bf-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform .5s}
+.bf:hover .bf-bar{transform:scaleX(1)}
+.bf-ico{width:44px;height:44px;border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;color:var(--gold);margin-bottom:28px}
+.bf-t{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--white);margin-bottom:14px;letter-spacing:-0.01em}
+.bf-d{font-size:14px;color:var(--muted);line-height:1.8}
+.bf-tag{display:inline-block;margin-top:20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-d);padding:4px 12px}
+
+/* ─────────────────────────────────────── */
+/*  PAGE: PRICING                          */
+/* ─────────────────────────────────────── */
+.price-hero{padding:160px 64px 80px;text-align:center}
+.price-subtitle{font-size:16px;font-weight:300;color:var(--muted);line-height:1.75;max-width:480px;margin:20px auto 0}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:80px}
+.pc{background:var(--surface);padding:52px 40px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.pc.featured{background:linear-gradient(160deg,rgba(201,169,110,0.1),rgba(201,169,110,0.04))}
+.pc-badge{position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)}
+.pc-plan{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.pc-price{font-family:var(--serif);font-size:clamp(44px,5vw,64px);font-weight:300;color:var(--white);letter-spacing:-0.04em;line-height:1;margin-bottom:6px}
+.pc-price sub{font-size:18px;vertical-align:baseline;color:var(--muted)}
+.pc-price span{font-size:16px;color:var(--muted)}
+.pc-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.pc-feats{display:flex;flex-direction:column;gap:12px;margin-bottom:40px;flex:1}
+.pc-feat{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+.pc-feat::before{content:'✦';color:var(--gold);font-size:10px;flex-shrink:0}
+.pc-feat.muted::before{content:'—';color:var(--faint)}
+.pc-feat.muted{color:var(--faint)}
+.pc-btn{width:100%;text-align:center}
+.price-note{text-align:center;margin-top:48px;font-size:13px;color:var(--muted);line-height:1.75}
+.price-faq{margin-top:100px}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:52px}
+.faq-item{background:var(--surface);padding:36px 36px;transition:background .3s}
+.faq-item:hover{background:var(--surface2)}
+.faq-q{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--white);margin-bottom:12px;letter-spacing:-0.01em}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* ─────────────────────────────────────── */
+/*  PAGE: ABOUT                            */
+/* ─────────────────────────────────────── */
+.about-hero{padding:160px 64px 80px;position:relative;overflow:hidden}
+.about-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 20%,transparent 100%);pointer-events:none}
+.about-intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;margin-top:80px}
+.about-p{font-size:16px;font-weight:300;color:var(--muted);line-height:1.88;margin-bottom:20px}
+.manifesto{border-left:2px solid var(--gold);padding-left:28px;margin:40px 0}
+.manifesto p{font-family:var(--serif);font-size:20px;font-weight:300;font-style:italic;color:var(--white);line-height:1.55;margin-bottom:12px}
+.values-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.val{background:var(--surface);padding:36px 30px;transition:background .3s}
+.val:hover{background:var(--surface2)}
+.val-t{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--white);margin-bottom:10px}
+.val-d{font-size:13px;color:var(--muted);line-height:1.65}
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:64px}
+.stack-item{background:var(--surface);padding:30px 28px;text-align:center;transition:background .3s}
+.stack-item:hover{background:var(--surface2)}
+.stack-name{font-size:13px;font-weight:500;color:var(--white);margin-bottom:6px;letter-spacing:.04em}
+.stack-role{font-size:11px;color:var(--muted)}
+
+/* ─────────────────────────────────────── */
+/*  PAGE: CONTACT                          */
+/* ─────────────────────────────────────── */
+.contact-hero{padding:160px 64px 80px}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;margin-top:80px}
+.contact-info{display:flex;flex-direction:column;gap:1px}
+.ci{border:1px solid var(--border);border-bottom:none;padding:26px 28px;display:flex;align-items:flex-start;gap:16px;transition:background .3s}
+.ci:last-child{border-bottom:1px solid var(--border)}
+.ci:hover{background:var(--surface2)}
+.ci-ico{width:32px;height:32px;border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;margin-top:2px}
+.ci-label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.ci-val{font-size:14px;color:var(--white)}
+.cf{display:flex;flex-direction:column;gap:16px}
+.cf-group{display:flex;flex-direction:column;gap:6px}
+.cf-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cf input,.cf textarea,.cf select{background:var(--surface2);border:1px solid var(--border);color:var(--white);padding:14px 18px;font-family:var(--sans);font-size:14px;width:100%;outline:none;transition:border-color .25s;-webkit-appearance:none}
+.cf input:focus,.cf textarea:focus,.cf select:focus{border-color:var(--gold)}
+.cf input::placeholder,.cf textarea::placeholder{color:var(--faint)}
+.cf textarea{min-height:140px;resize:vertical}
+.cf select option{background:var(--surface2);color:var(--white)}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ─────────────────────────────────────── */
+/*  FOOTER                                 */
+/* ─────────────────────────────────────── */
+.site-footer{border-top:1px solid var(--border);background:var(--surface)}
+.footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:60px;padding:72px 64px 56px}
+.foot-brand .nav-logo{display:block;margin-bottom:16px}
+.foot-tagline{font-size:13px;color:var(--muted);line-height:1.75;max-width:220px;margin-bottom:28px}
+.foot-socials{display:flex;gap:12px}
+.soc-btn{width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:none;transition:border-color .25s,color .25s}
+.soc-btn:hover{border-color:var(--gold);color:var(--gold)}
+.foot-col h4{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.foot-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.foot-col ul li a{font-size:13px;color:var(--muted);text-decoration:none;cursor:none;transition:color .25s}
+.foot-col ul li a:hover{color:var(--white)}
+.footer-bottom{border-top:1px solid var(--border);padding:22px 64px;display:flex;align-items:center;justify-content:space-between}
+.foot-copy{font-size:11px;color:var(--faint);letter-spacing:.06em}
+.foot-legal{display:flex;gap:24px}
+.foot-legal a{font-size:11px;color:var(--faint);text-decoration:none;letter-spacing:.06em;cursor:none;transition:color .25s}
+.foot-legal a:hover{color:var(--muted)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  nav{padding:18px 28px}
+  nav.scrolled{padding:14px 28px}
+  .nav-center{gap:22px}
+  .container,.feat-hero,.price-hero,.about-hero,.contact-hero,.hero{padding-left:28px;padding-right:28px}
+  .prob-grid,.pl-grid,.big-feat-grid,.about-intro-grid,.contact-grid,.ent-grid{grid-template-columns:1fr;gap:48px}
+  .steps-g,.testi-grid,.stack-grid{grid-template-columns:1fr 1fr}
+  .price-grid{grid-template-columns:1fr}
+  .faq-grid{grid-template-columns:1fr}
+  .hero-metrics{display:none}
+  .footer-top{grid-template-columns:1fr 1fr;gap:40px;padding:48px 28px}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center;padding:18px 28px}
+}
+@media(max-width:640px){
+  .nav-center{display:none}
+  .steps-g,.testi-grid,.stack-grid,.big-feat-grid,.values-grid{grid-template-columns:1fr}
+  .cf-row{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  NAVIGATION                         -->
+<!-- ═══════════════════════════════════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo" onclick="showPage('home',this);return false">slydr<sup>®</sup></a>
+  <ul class="nav-center">
+    <li><a href="#" onclick="showPage('home',this);return false" class="active-link" data-page="home">Home</a></li>
+    <li><a href="#" onclick="showPage('features',this);return false" data-page="features">Features</a></li>
+    <li><a href="#" onclick="showPage('pricing',this);return false" data-page="pricing">Pricing</a></li>
+    <li><a href="#" onclick="showPage('about',this);return false" data-page="about">About</a></li>
+    <li><a href="#" onclick="showPage('contact',this);return false" data-page="contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+  <div class="nav-right">
+    <button class="nav-btn ghost" onclick="openModal('waitlist')">Join waitlist</button>
+    <button class="nav-btn gold" onclick="openModal('demo')">Request demo</button>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">
+      <svg class="ico-moon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M12 9A5.5 5.5 0 0 1 5 2a5.5 5.5 0 1 0 7 7z" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="ico-sun" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="2.3" stroke="currentColor" stroke-width="1.25"/>
+        <path d="M7 1v1.4M7 11.6V13M1 7h1.4M11.6 7H13M2.7 2.7l1 1M10.3 10.3l1 1M10.3 2.7l-1 1M2.7 10.3l1-1" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════ -->
+<!--  MODAL: REQUEST DEMO                -->
+<!-- ═══════════════════════════════════ -->
+<div class="modal-overlay" id="modal-demo" role="dialog" aria-modal="true" aria-labelledby="demo-title">
+  <div class="modal-backdrop" onclick="closeModal('demo')"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-eyebrow">Early access</div>
+        <div class="modal-title" id="demo-title">Request a<br><em>live walkthrough.</em></div>
+        <p class="modal-sub">Tell us about your team and we'll reach out within 24 hours to book a call — or jump straight onto our calendar below.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('demo')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Calendly direct booking row -->
+      <div class="calendly-row">
+        <div>
+          <div class="calendly-label">Book a call directly</div>
+          <div class="calendly-sub">Pick a time that works — 30 min walkthrough</div>
+        </div>
+        <!-- Replace CALENDLY_URL with your real Calendly link e.g. https://calendly.com/yourname/slydr-demo -->
+        <button class="btn-calendly" onclick="openCalendly()">Book a call</button>
+      </div>
+      <!-- Calendly embed placeholder -->
+      <!-- <div id="calendly-embed" style="min-width:320px;height:630px"></div> -->
+      <!-- To enable inline embed: uncomment above div, load Calendly widget script, call initCalendlyEmbed() -->
+
+      <div class="modal-divider"></div>
+
+      <!-- Demo request form -->
+      <div id="demo-form-wrap">
+        <form id="demo-form" novalidate>
+          <!-- Replace ACTION with your Formspree endpoint: https://formspree.io/f/YOUR_ID -->
+          <!-- <form id="demo-form" action="https://formspree.io/f/YOUR_ID" method="POST"> -->
+          <div class="f-row">
+            <div class="f-group">
+              <label class="f-label" for="df-fname">First name</label>
+              <input class="f-input" id="df-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name"/>
+              <span class="f-err-msg" id="df-fname-err">Required</span>
+            </div>
+            <div class="f-group">
+              <label class="f-label" for="df-lname">Last name</label>
+              <input class="f-input" id="df-lname" name="last_name" type="text" placeholder="Johnson" autocomplete="family-name"/>
+            </div>
+          </div>
+          <div class="f-group">
+            <label class="f-label" for="df-email">Work email</label>
+            <input class="f-input" id="df-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email"/>
+            <span class="f-err-msg" id="df-email-err">Please enter a valid work email</span>
+          </div>
+          <div class="f-row">
+            <div class="f-group">
+              <label class="f-label" for="df-company">Company</label>
+              <input class="f-input" id="df-company" name="company" type="text" placeholder="Acme Corp"/>
+            </div>
+            <div class="f-group">
+              <label class="f-label" for="df-size">Team size</label>
+              <select class="f-select" id="df-size" name="team_size">
+                <option value="">Select…</option>
+                <option>1–10</option><option>11–50</option><option>51–200</option><option>200+</option>
+              </select>
+            </div>
+          </div>
+          <div class="f-group">
+            <label class="f-label" for="df-msg">What's the slide problem you're solving? <span style="color:var(--faint)">(optional)</span></label>
+            <textarea class="f-textarea" id="df-msg" name="message" placeholder="How many decks does your team manage? What's frustrating about finding slides today?"></textarea>
+          </div>
+          <button type="submit" class="btn-gold" style="width:100%;text-align:center;padding:15px;margin-top:4px" id="demo-submit">Request a walkthrough</button>
+          <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:12px;letter-spacing:.04em">No commitment. We'll follow up within 24 hours.</p>
+        </form>
+        <div class="form-success" id="demo-success">
+          <div class="success-ico"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="success-title">Request received.</div>
+          <p class="success-sub">We'll be in touch within 24 hours.<br>Or book a time directly on our calendar.</p>
+          <div style="margin-top:24px">
+            <!-- Replace CALENDLY_URL -->
+            <button class="btn-calendly" style="margin:0 auto" onclick="openCalendly()">Book a call now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  MODAL: JOIN WAITLIST               -->
+<!-- ═══════════════════════════════════ -->
+<div class="modal-overlay" id="modal-waitlist" role="dialog" aria-modal="true" aria-labelledby="wl-title">
+  <div class="modal-backdrop" onclick="closeModal('waitlist')"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-eyebrow">Limited rollout</div>
+        <div class="modal-title" id="wl-title">Join the<br><em>waitlist.</em></div>
+        <p class="modal-sub">slydr is in a limited design partner program. Leave your email and we'll reach out when your spot opens.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('waitlist')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="wl-form-wrap">
+        <form id="wl-form" novalidate>
+          <!-- Replace ACTION: https://formspree.io/f/YOUR_WAITLIST_ID -->
+          <!-- Or use Tally: add the tally embed.js script tag to your head, then use a data-tally-src div here -->
+          <div class="f-group">
+            <label class="f-label" for="wl-email">Work email</label>
+            <input class="f-input" id="wl-email" name="email" type="email" placeholder="you@company.com" autocomplete="email"/>
+            <span class="f-err-msg" id="wl-email-err">Please enter a valid email</span>
+          </div>
+          <div class="f-group">
+            <label class="f-label" for="wl-company">Company <span style="color:var(--faint)">(optional)</span></label>
+            <input class="f-input" id="wl-company" name="company" type="text" placeholder="Your company"/>
+          </div>
+          <div class="f-group">
+            <label class="f-label" for="wl-role">Role <span style="color:var(--faint)">(optional)</span></label>
+            <select class="f-select" id="wl-role" name="role">
+              <option value="">Select…</option>
+              <option>Sales / BD</option><option>Marketing</option><option>Strategy / Consulting</option><option>Product</option><option>Engineering</option><option>Leadership / Executive</option><option>Other</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-gold" style="width:100%;text-align:center;padding:15px;margin-top:8px" id="wl-submit">Join the waitlist</button>
+          <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:12px;letter-spacing:.04em">No spam. Unsubscribe any time.</p>
+        </form>
+        <div class="form-success" id="wl-success">
+          <div class="success-ico"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="success-title">You're on the list.</div>
+          <p class="success-sub">We'll notify you when your spot opens. In the meantime, follow our build-in-public updates on LinkedIn and X.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST NOTIFICATION ─── -->
+<div class="notif" id="notif">
+  <div class="notif-dot"></div>
+  <div class="notif-txt" id="notif-txt">Done.</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  PAGE: HOME                         -->
+<!-- ═══════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eye">Organizational slide memory</div>
+    <h1 class="hero-h">
+      Your best slide<br>
+      <em class="l2">already exists.</em>
+    </h1>
+    <p class="hero-sub">slydr surfaces your organization's presentation knowledge — visually, instantly, inside PowerPoint. Search. Preview. Insert. Done.</p>
+    <div class="hero-acts">
+      <button class="btn-gold" onclick="openModal('demo')">Request a demo</button>
+      <div class="cta-secondary">
+        <button class="cta-ghost-btn" onclick="openModal('waitlist')">Join waitlist</button>
+        <div class="cta-sep"></div>
+        <a href="#" class="ghost-link" onclick="showPage('features',null);return false">Explore features <span class="arr"></span></a>
+      </div>
+    </div>
+    <div class="hero-metrics">
+      <div class="m-b"><span class="m-n">100k</span><span class="m-l">slides — tested at scale</span></div>
+      <div class="m-b"><span class="m-n">&lt;200ms</span><span class="m-l">retrieval latency</span></div>
+      <div class="m-b"><span class="m-n">pilot</span><span class="m-l">program open now</span></div>
+    </div>
+    <div class="scroll-hint"><div class="s-line"></div>Scroll to explore</div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="mq-wrap">
+    <div class="mq-track">
+      <span class="mq-i">Retrieval-first architecture</span><span class="mq-i">OpenSearch-backed</span><span class="mq-i">Self-hosted deployment</span><span class="mq-i">Visual slide discovery</span><span class="mq-i">100k+ slides at scale</span><span class="mq-i">Inside PowerPoint</span><span class="mq-i">Organizational memory</span><span class="mq-i">Instant retrieval</span>
+      <span class="mq-i">Retrieval-first architecture</span><span class="mq-i">OpenSearch-backed</span><span class="mq-i">Self-hosted deployment</span><span class="mq-i">Visual slide discovery</span><span class="mq-i">100k+ slides at scale</span><span class="mq-i">Inside PowerPoint</span><span class="mq-i">Organizational memory</span><span class="mq-i">Instant retrieval</span>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="s-problem">
+    <div class="container">
+      <div class="prob-grid">
+        <div class="reveal">
+          <div class="s-label">The problem</div>
+          <h2 class="s-head">Presentation<br>entropy is<br><em>costing you.</em></h2>
+          <br>
+          <p class="pb-txt">Slides are rebuilt from scratch every day — not because they don't exist, but because no one can find them. Buried in SharePoint. Lost in email. Forgotten in archived folders.</p>
+          <p class="pb-txt">slydr is retrieval infrastructure — modern OpenSearch-backed search, visual previews, and a self-hosted architecture built for organizations serious about their presentation knowledge.</p>
+        </div>
+        <div class="prob-aside reveal rd2">
+          <div class="ab"><div class="ab-glow"></div><div class="ab-n">4×</div><div class="ab-d">The average slide concept is rebuilt independently across different teams before anyone searches for it</div></div>
+          <div class="ab"><div class="ab-glow"></div><div class="ab-n">2h</div><div class="ab-d">Lost per person per week hunting through shared drives and email threads for a slide that already exists</div></div>
+          <div class="ab"><div class="ab-glow"></div><div class="ab-n">∞</div><div class="ab-d">Off-brand versions of the same slide circulating with no version control and no single source of truth</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="s-how" id="how">
+    <div class="container">
+      <div class="how-top">
+        <div class="reveal">
+          <div class="s-label">The workflow</div>
+          <h2 class="s-head">Four steps.<br><em>Seconds, not hours.</em></h2>
+        </div>
+        <div class="how-note reveal rd1">Every interaction happens inside PowerPoint. No tab-switching. No folder digging. No rebuilding.</div>
+      </div>
+      <div class="steps-g reveal">
+        <div class="step"><div class="step-bar"></div><span class="step-n">01 — Search</span><div class="step-ico"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.25"/><path d="M12 12l4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg></div><div class="step-t">Type a concept</div><div class="step-d">Search by topic, keyword, or phrase across every indexed slide — including text inside charts, tables, and speaker notes.</div></div>
+        <div class="step"><div class="step-bar"></div><span class="step-n">02 — Preview</span><div class="step-ico"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1.5" y="3.5" width="15" height="11" rx="1" stroke="currentColor" stroke-width="1.25"/><path d="M5 7.5h8M5 10.5h5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg></div><div class="step-t">See thumbnails</div><div class="step-d">Visual thumbnail previews let you identify the right slide by sight, not by filename. Browse results the way your brain works.</div></div>
+        <div class="step"><div class="step-bar"></div><span class="step-n">03 — Inspect</span><div class="step-ico"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg></div><div class="step-t">Review metadata</div><div class="step-d">Source deck, date, owner, context — all visible before committing. Get the right version of the right slide every time.</div></div>
+        <div class="step"><div class="step-bar"></div><span class="step-n">04 — Insert</span><div class="step-ico"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v14M2 9h14" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg></div><div class="step-t">Drop it in</div><div class="step-d">Insert directly into your active deck with one click. No copy-paste. No format degradation. Organizational knowledge, instantly reused.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLUGIN DEMO -->
+  <section class="s-plugin">
+    <div class="container">
+      <div class="pl-grid">
+        <div class="reveal">
+          <div class="s-label">The plugin</div>
+          <h2 class="s-head">Lives inside<br><em>PowerPoint.</em></h2>
+          <br>
+          <p class="pl-p">slydr runs as a task pane add-in. Your team never leaves PowerPoint. Search, preview and insert — all within the environment they already use every day.</p>
+          <p class="pl-p">No external tabs. No context switching. No workflow disruption. Just retrieval, exactly when and where it's needed.</p>
+          <p class="pl-fine">Windows · Mac · PowerPoint Online</p>
+          <br><br>
+          <button class="btn-gold" onclick="openModal('demo')">Request a demo</button>
+        </div>
+        <div class="reveal rd2">
+          <div class="ppt-shell">
+            <div class="ppt-tb"><div class="ppt-dots"><span></span><span></span><span></span></div><span class="ppt-ti">Q4 Board Deck.pptx — PowerPoint</span><div></div></div>
+            <div class="ppt-ribbon"><span class="r-tab">Home</span><span class="r-tab">Insert</span><span class="r-tab on">slydr</span><span class="r-tab">View</span></div>
+            <div class="ppt-body">
+              <div class="ppt-c"><div class="slide-v"><div class="sv-t"></div><div class="sv-l" style="width:68%"></div><div class="sv-l" style="width:44%"></div><div class="sv-ch" id="chart"><div class="sv-b" style="height:60%"></div><div class="sv-b" style="height:80%"></div><div class="sv-b" style="height:44%"></div><div class="sv-b" style="height:90%"></div><div class="sv-b" style="height:64%"></div></div><div class="sv-l" style="width:78%"></div></div></div>
+              <div class="s-panel">
+                <div class="ph"><span class="ph-n">slydr</span><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1 4.5h7M4.5 1l3.5 3.5-3.5 3.5" stroke="rgba(201,169,110,0.4)" stroke-width="1" stroke-linecap="round"/></svg></div>
+                <div class="p-srch"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><circle cx="3.5" cy="3.5" r="2.5" stroke="rgba(240,237,232,0.3)" stroke-width="1"/><path d="M5.5 5.5l2 2" stroke="rgba(240,237,232,0.3)" stroke-width="1" stroke-linecap="round"/></svg><input type="text" value="revenue chart Q4" readonly/></div>
+                <div class="p-res">
+                  <div class="pt hot" id="pt0"><div class="pt-in"><div class="pt-bar" style="height:55%;flex:1"></div><div class="pt-bar" style="height:72%;flex:1"></div><div class="pt-bar" style="height:38%;flex:1"></div><div class="pt-bar" style="height:88%;flex:1"></div></div><div class="pt-m">Board Deck Nov '24 · Slide 7</div><div class="pt-ins">Insert</div></div>
+                  <div class="pt" id="pt1"><div class="pt-in"><div class="pt-bar" style="height:64%;flex:1;opacity:.6"></div><div class="pt-bar" style="height:40%;flex:1;opacity:.6"></div><div class="pt-bar" style="height:76%;flex:1;opacity:.6"></div></div><div class="pt-m">Sales QBR Q3 · Slide 12</div><div class="pt-ins">Insert</div></div>
+                  <div class="pt" id="pt2"><div class="pt-in"><div class="pt-bar" style="height:30%;flex:1;opacity:.4"></div><div class="pt-bar" style="height:60%;flex:1;opacity:.4"></div><div class="pt-bar" style="height:80%;flex:1;opacity:.4"></div><div class="pt-bar" style="height:46%;flex:1;opacity:.4"></div></div><div class="pt-m">Investor Update · Slide 4</div><div class="pt-ins">Insert</div></div>
+                </div>
+                <div class="p-count">3 of 12,847 slides</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EARLY ACCESS BAND -->
+  <section class="s-testi">
+    <div class="container">
+      <div class="reveal">
+        <div class="s-label">Design partner program</div>
+        <h2 class="s-head">We're working with<br><em>a small group of teams.</em></h2>
+        <p style="font-size:15px;font-weight:300;color:var(--muted);line-height:1.85;max-width:540px;margin-top:20px">slydr is currently in a limited pilot program. We're onboarding a select group of organizations to validate the core retrieval workflow — and to shape what the product becomes. If your team spends real time hunting for slides, we'd like to talk.</p>
+      </div>
+      <div class="testi-grid reveal rd1">
+        <div class="t-card">
+          <div class="feat-ico" style="margin-bottom:20px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="t-quote" style="font-style:normal;font-size:14px;color:var(--muted)">Early access. No commitment. We work closely with pilot teams to configure indexing and validate the retrieval workflow end-to-end.</div>
+          <div class="t-author">Pilot program</div>
+          <div class="t-role">Limited spots available</div>
+        </div>
+        <div class="t-card">
+          <div class="feat-ico" style="margin-bottom:20px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="t-quote" style="font-style:normal;font-size:14px;color:var(--muted)">Design partners get hands-on onboarding, direct access to the team, and meaningful input into roadmap priorities as the product evolves.</div>
+          <div class="t-author">Design partner</div>
+          <div class="t-role">Shape the product</div>
+        </div>
+        <div class="t-card" style="display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div class="feat-ico" style="margin-bottom:20px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6L14 5.8l-3 2.9.7 4.1L8 10.9l-3.7 1.9.7-4.1-3-2.9 4.2-.6L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+            <div class="t-quote" style="font-style:normal;font-size:14px;color:var(--muted)">Interested in the pilot? Tell us about your slide problem and we'll reach out within 24 hours.</div>
+          </div>
+          <button class="btn-outline" style="margin-top:24px;width:100%;text-align:center" onclick="openModal('demo')">Apply for pilot access</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENTERPRISE FEATURES -->
+  <section class="s-ent">
+    <div class="container">
+      <div class="reveal">
+        <div class="s-label">Enterprise-ready</div>
+        <h2 class="s-head">Built for<br><em>organizations.</em></h2>
+      </div>
+      <div class="ent-grid">
+        <div class="feat-list reveal rd1">
+          <div class="feat-item"><div class="feat-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l2 4h5l-4 3 1.5 5L8 11l-4.5 2L5 8 1 5h5L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></div><div><div class="feat-label">OpenSearch retrieval</div><div class="feat-desc">Enterprise-grade search engine behind every query. Sub-200ms response times at 100k+ slide scale.</div></div></div>
+          <div class="feat-item"><div class="feat-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="feat-label">Self-hosted deployment</div><div class="feat-desc">Run slydr entirely on your own infrastructure. Your slides never leave your environment.</div></div></div>
+          <div class="feat-item"><div class="feat-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 4v4l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="feat-label">Incremental indexing</div><div class="feat-desc">New decks indexed automatically. Your retrieval stays current without manual intervention.</div></div></div>
+          <div class="feat-item"><div class="feat-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="feat-label">Observability built in</div><div class="feat-desc">Full logging, metrics, and benchmarking infrastructure included from day one.</div></div></div>
+        </div>
+        <div class="ent-visual reveal rd2">
+          <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:20px">System status</div>
+          <div class="ev-row"><div class="ev-dot"></div><div class="ev-label">OpenSearch cluster</div><div class="ev-tag">Online</div></div>
+          <div class="ev-row"><div class="ev-dot"></div><div class="ev-label">Indexing pipeline</div><div class="ev-tag">Running</div></div>
+          <div class="ev-row"><div class="ev-dot"></div><div class="ev-label">Thumbnail generator</div><div class="ev-tag">Online</div></div>
+          <div class="ev-row"><div class="ev-dot grey"></div><div class="ev-label">SharePoint sync</div><div class="ev-tag grey">Coming soon</div></div>
+          <div class="ev-row"><div class="ev-dot grey"></div><div class="ev-label">Google Drive sync</div><div class="ev-tag grey">Coming soon</div></div>
+          <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+            <div><div style="font-family:var(--serif);font-size:28px;color:var(--gold)">12,847</div><div style="font-size:11px;color:var(--muted)">slides indexed</div></div>
+            <div style="text-align:right"><div style="font-family:var(--serif);font-size:28px;color:var(--gold)">142ms</div><div style="font-size:11px;color:var(--muted)">avg latency</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAITLIST INLINE SECTION -->
+  <section class="s-waitlist">
+    <div class="container">
+      <div class="wl-grid">
+        <div class="wl-copy reveal">
+          <div class="wl-pill"><span class="wl-pill-dot"></span><span class="wl-pill-txt">Pilot program open</span></div>
+          <div class="s-label">Limited rollout</div>
+          <h2 class="s-head">Get early<br><em>access.</em></h2>
+          <br>
+          <p>We're onboarding a small number of teams into the slydr pilot. Join the waitlist and we'll reach out when your spot opens.</p>
+          <p>No commitment. No credit card. Just retrieval that works.</p>
+        </div>
+        <div class="wl-form reveal rd2">
+          <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px">Join waitlist</div>
+          <div id="wl-inline-wrap">
+            <form id="wl-inline-form" novalidate>
+              <!-- Replace with Formspree endpoint: action="https://formspree.io/f/YOUR_ID" method="POST" -->
+              <!-- Or replace entire form with Tally embed: <div data-tally-src="https://tally.so/embed/YOUR_ID"></div> -->
+              <div class="f-group">
+                <label class="f-label" for="wli-email">Work email</label>
+                <div class="wl-inline">
+                  <input class="f-input" id="wli-email" name="email" type="email" placeholder="you@company.com"/>
+                  <button type="submit" class="btn-gold" id="wli-submit">Join</button>
+                </div>
+                <span class="f-err-msg" id="wli-err">Please enter a valid email</span>
+              </div>
+              <div class="f-group" style="margin-top:4px">
+                <label class="f-label" for="wli-company">Company <span style="color:var(--faint)">(optional)</span></label>
+                <input class="f-input" id="wli-company" name="company" type="text" placeholder="Your company"/>
+              </div>
+              <p class="wl-note">No spam. Unsubscribe any time. We'll only contact you about slydr access.</p>
+            </form>
+            <div class="form-success" id="wl-inline-success">
+              <div class="success-ico"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="success-title">You're on the list.</div>
+              <p class="success-sub">We'll reach out when your spot is ready.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="s-qstrip">
+    <div class="container">
+      <div class="q-inner reveal">
+        <div class="q-mark">"</div>
+        <div class="q-txt">The slide exists. It was built last quarter, for the last pitch, by someone on the team. The problem is <em>nobody can find it</em> before the meeting starts.</div>
+        <div class="q-attr">Every senior presenter, everywhere</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="s-cta">
+    <div class="container">
+      <div class="cta-in reveal">
+        <div class="cta-ol">Early access</div>
+        <h2 class="cta-h">Stop<br><em>rebuilding slides.</em></h2>
+        <p class="cta-sub">slydr is in early access. Request a demo and see organizational slide retrieval working live inside PowerPoint.</p>
+        <div class="cta-btns">
+          <button class="btn-gold" onclick="openModal('demo')">Request a demo</button>
+          <button class="btn-outline" onclick="openModal('waitlist')">Join waitlist</button>
+        </div>
+        <p class="cta-fine">Design partner program · Limited availability · No commitment</p>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+<!-- ═══════════════════════════════════ -->
+<!--  PAGE: FEATURES                     -->
+<!-- ═══════════════════════════════════ -->
+<div class="page" id="page-features">
+  <div class="feat-hero">
+    <div class="container">
+      <div class="s-label">Platform</div>
+      <h1 class="s-head" style="font-size:clamp(48px,7vw,90px)">Everything you need<br>to <em>stop rebuilding slides.</em></h1>
+      <p style="font-size:17px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px;margin-top:24px">A complete retrieval platform — from indexing infrastructure to PowerPoint plugin — built for organizations that take their presentation knowledge seriously.</p>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:130px">
+    <div class="big-feat-grid reveal">
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M13.5 13.5l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">Slide-level retrieval</div><div class="bf-d">slydr indexes at the slide level — not the deck level. Search returns the exact slide, not just a file name. Every query searches all text including tables, diagrams, and notes.</div><span class="bf-tag">Core</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M6 9h8M6 12h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">Visual thumbnail previews</div><div class="bf-d">Every result renders a visual thumbnail. Identify the right slide by sight before inserting. No more opening decks just to check if a slide is what you remembered.</div><span class="bf-tag">Core</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l4 4 10-9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="bf-t">PowerPoint plugin</div><div class="bf-d">A task pane add-in that runs natively inside PowerPoint. Search, preview, inspect metadata, and insert slides without ever switching context.</div><span class="bf-tag">Plugin</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2v18M2 10h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">OpenSearch backend</div><div class="bf-d">Enterprise-grade search infrastructure. Sub-200ms retrieval latency. Tested and benchmarked at 100,000+ slide scale. Built to grow with your organization.</div><span class="bf-tag">Infrastructure</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6 10h8M10 6v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">Self-hosted deployment</div><div class="bf-d">Run slydr entirely within your own infrastructure. Your slides stay on your servers. No third-party cloud dependency. Full control over your data environment.</div><span class="bf-tag">Enterprise</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">Incremental indexing</div><div class="bf-d">New decks are indexed automatically as they appear. Your retrieval stays current without manual re-indexing. Folder watching and sync pipelines included.</div><span class="bf-tag">Infrastructure</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="bf-t">Retrieval metadata</div><div class="bf-d">Every result surfaces source deck, author, date, slide position, and custom tags. Know the provenance of every slide before you commit to using it.</div><span class="bf-tag">Core</span></div>
+      <div class="bf"><div class="bf-bar"></div><div class="bf-ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2 10h4M10 2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bf-t">Benchmark & observability</div><div class="bf-d">Full performance benchmarking with BenchmarkDotNet. Load testing with NBomber. Operational observability foundations built in from day one.</div><span class="bf-tag">Enterprise</span></div>
+    </div>
+
+    <div class="s-qstrip" style="padding:100px 0 0">
+      <div class="q-inner reveal">
+        <div class="q-mark">"</div>
+        <div class="q-txt">slydr answers our firm's content problem: <em>what's our best content and how does everyone access it</em> for client presentations?</div>
+        <div class="q-attr">Director, Strategy Consulting</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:80px" class="reveal">
+      <button class="btn-gold" onclick="openModal('demo')">Request a demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  PAGE: PRICING                      -->
+<!-- ═══════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="price-hero">
+    <div class="container">
+      <div class="s-label" style="justify-content:center">Pricing</div>
+      <h1 class="s-head" style="text-align:center;font-size:clamp(44px,7vw,88px)">Transparent,<br><em>early-access pricing.</em></h1>
+      <p class="price-subtitle">Pricing below reflects our current pilot program rates. We're working closely with early teams and pricing will evolve. Talk to us — we'll find something that works.</p>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:130px">
+    <div class="price-grid reveal">
+      <!-- STARTER -->
+      <div class="pc">
+        <div class="pc-plan">Starter</div>
+        <div class="pc-price"><sub>$</sub>49<span>/mo</span></div>
+        <div class="pc-desc">For small teams getting started with slide retrieval. Up to 5 users, 10k slides indexed.</div>
+        <div class="pc-feats">
+          <div class="pc-feat">PowerPoint plugin</div>
+          <div class="pc-feat">Visual thumbnail search</div>
+          <div class="pc-feat">Up to 10,000 slides</div>
+          <div class="pc-feat">5 users included</div>
+          <div class="pc-feat">SQLite backend</div>
+          <div class="pc-feat">Email support</div>
+          <div class="pc-feat muted">OpenSearch backend</div>
+          <div class="pc-feat muted">Self-hosted deployment</div>
+          <div class="pc-feat muted">Custom indexing pipelines</div>
+        </div>
+        <button class="btn-outline pc-btn" onclick="openModal('waitlist')">Join waitlist</button>
+      </div>
+      <!-- PRO -->
+      <div class="pc featured">
+        <div class="pc-badge"></div>
+        <div class="pc-plan">Pro</div>
+        <div class="pc-price"><sub>$</sub>149<span>/mo</span></div>
+        <div class="pc-desc">For growing organizations that need speed, scale, and retrieval that keeps up. Up to 20 users, 100k slides.</div>
+        <div class="pc-feats">
+          <div class="pc-feat">Everything in Starter</div>
+          <div class="pc-feat">OpenSearch backend</div>
+          <div class="pc-feat">Up to 100,000 slides</div>
+          <div class="pc-feat">20 users included</div>
+          <div class="pc-feat">Incremental indexing</div>
+          <div class="pc-feat">Retrieval metadata & tags</div>
+          <div class="pc-feat">Priority support</div>
+          <div class="pc-feat muted">Self-hosted deployment</div>
+          <div class="pc-feat muted">Custom pipelines</div>
+        </div>
+        <button class="btn-gold pc-btn" onclick="openModal('demo')">Request a demo</button>
+      </div>
+      <!-- ENTERPRISE -->
+      <div class="pc">
+        <div class="pc-plan">Enterprise</div>
+        <div class="pc-price" style="font-size:42px;padding-top:8px">Custom</div>
+        <div class="pc-desc">For organizations that require full deployment control, custom indexing pipelines, and white-glove onboarding.</div>
+        <div class="pc-feats">
+          <div class="pc-feat">Everything in Pro</div>
+          <div class="pc-feat">Self-hosted / on-premise</div>
+          <div class="pc-feat">Unlimited slides</div>
+          <div class="pc-feat">Unlimited users</div>
+          <div class="pc-feat">Custom indexing pipelines</div>
+          <div class="pc-feat">SSO / SAML (roadmap)</div>
+          <div class="pc-feat">Dedicated onboarding</div>
+          <div class="pc-feat">SLA — discuss with us</div>
+          <div class="pc-feat">Custom deployment</div>
+        </div>
+        <button class="btn-outline pc-btn" onclick="showPage('contact',null)">Contact us</button>
+      </div>
+    </div>
+
+    <p class="price-note reveal">All plans include a 30-day free trial. No credit card required.<br>Annual billing available with 20% discount.</p>
+
+    <!-- FAQ -->
+    <div class="price-faq reveal">
+      <div class="s-label">Common questions</div>
+      <h2 class="s-head">Frequently<br><em>asked.</em></h2>
+      <div class="faq-grid" style="margin-top:52px">
+        <div class="faq-item"><div class="faq-q">What file formats does slydr index?</div><div class="faq-a">slydr indexes PowerPoint (.pptx) files. We use OpenXML SDK to extract text, metadata, and generate slide thumbnails. Support for additional formats is on the roadmap.</div></div>
+        <div class="faq-item"><div class="faq-q">Can we run slydr on our own servers?</div><div class="faq-a">Yes. The Enterprise plan includes full self-hosted deployment. Your slides never leave your infrastructure. We provide deployment guides and dedicated onboarding support.</div></div>
+        <div class="faq-item"><div class="faq-q">How does indexing work?</div><div class="faq-a">Point slydr at a folder or repository. The indexing pipeline extracts text, generates thumbnails, and pushes everything to OpenSearch. Incremental indexing keeps it current automatically.</div></div>
+        <div class="faq-item"><div class="faq-q">Is there an AI component?</div><div class="faq-a">slydr is a retrieval platform, not an AI generator. We use OpenSearch for fast, accurate text retrieval — not LLMs. What you get back are real slides your organization already created.</div></div>
+        <div class="faq-item"><div class="faq-q">Does it work with SharePoint and OneDrive?</div><div class="faq-a">SharePoint and cloud storage integrations are on the roadmap. The current version indexes local and network folder sources. Enterprise customers can discuss custom integration during onboarding.</div></div>
+        <div class="faq-item"><div class="faq-q">How is it different from SharePoint search?</div><div class="faq-a">SharePoint searches at the file level. slydr searches at the slide level, returns visual thumbnails, and lets you insert directly into PowerPoint. It's an entirely different experience.</div></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:80px" class="reveal">
+      <button class="btn-gold" onclick="openModal('demo')">Talk to us about pricing</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  PAGE: ABOUT                        -->
+<!-- ═══════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <div class="container">
+      <div class="s-label">About slydr</div>
+      <h1 class="s-head" style="font-size:clamp(46px,7vw,88px)">Built by people<br>tired of <em>rebuilding slides.</em></h1>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:130px">
+    <div class="about-intro-grid">
+      <div class="reveal">
+        <p class="about-p">slydr was born from a simple observation: every organization already has the slides they need. The problem isn't content creation — it's content discovery. Teams spend hours rebuilding slides that exist, buried somewhere in a shared drive, an archived deck, or a forgotten email thread.</p>
+        <p class="about-p">We built slydr to fix that. Not with AI generation. Not with another slide template library. With real retrieval infrastructure — the kind that finds your organization's actual slides, visually, instantly, right inside PowerPoint.</p>
+        <p class="about-p">The product philosophy is simple: your organization already made the slide you need. slydr just helps you find it.</p>
+        <div class="manifesto">
+          <p>"Your organization already made the slide you need."</p>
+          <p>"Stop rebuilding. Start retrieving."</p>
+        </div>
+      </div>
+      <div class="values-grid reveal rd2">
+        <div class="val"><div class="val-t">Retrieval-first</div><div class="val-d">We don't generate slides. We surface the ones that already exist — accurately, visually, at speed.</div></div>
+        <div class="val"><div class="val-t">Operationally practical</div><div class="val-d">No Kubernetes. No distributed queues. Just infrastructure that's actually deployable by real teams.</div></div>
+        <div class="val"><div class="val-t">Privacy by design</div><div class="val-d">Self-hosted first. Your organizational knowledge stays where it belongs — inside your infrastructure.</div></div>
+        <div class="val"><div class="val-t">Workflow-obsessed</div><div class="val-d">Every feature earns its place by making the search → preview → insert flow faster and more reliable.</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:100px" class="reveal">
+      <div class="s-label">Tech stack</div>
+      <h2 class="s-head">Built on solid<br><em>foundations.</em></h2>
+      <div class="stack-grid" style="margin-top:52px">
+        <div class="stack-item"><div class="stack-name">C# / ASP.NET Core</div><div class="stack-role">Backend API</div></div>
+        <div class="stack-item"><div class="stack-name">OpenSearch</div><div class="stack-role">Retrieval engine</div></div>
+        <div class="stack-item"><div class="stack-name">OpenXML SDK</div><div class="stack-role">PPTX parsing</div></div>
+        <div class="stack-item"><div class="stack-name">SQLite</div><div class="stack-role">Fallback backend</div></div>
+        <div class="stack-item"><div class="stack-name">Office.js</div><div class="stack-role">PowerPoint plugin</div></div>
+        <div class="stack-item"><div class="stack-name">React / TypeScript</div><div class="stack-role">Plugin UI</div></div>
+        <div class="stack-item"><div class="stack-name">BenchmarkDotNet</div><div class="stack-role">Performance</div></div>
+        <div class="stack-item"><div class="stack-name">NBomber</div><div class="stack-role">Load testing</div></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:100px" class="reveal">
+      <div class="cta-ol">Get involved</div>
+      <h2 class="cta-h" style="font-size:clamp(34px,4.5vw,58px)">Want to see it<br><em>in action?</em></h2>
+      <p class="cta-sub" style="max-width:440px;margin:0 auto 40px">We're in early access and working closely with a small group of organizations. Request a demo and let's talk.</p>
+      <button class="btn-gold" onclick="openModal('demo')">Request a demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  PAGE: CONTACT                      -->
+<!-- ═══════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-hero">
+    <div class="container">
+      <div class="s-label">Get in touch</div>
+      <h1 class="s-head" style="font-size:clamp(46px,7vw,88px)">Let's talk<br><em>slides.</em></h1>
+      <p style="font-size:16px;font-weight:300;color:var(--muted);line-height:1.85;max-width:480px;margin-top:20px">Whether you want a live walkthrough, have deployment questions, or want to explore a design partnership — we'd love to hear from you.</p>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:130px">
+    <div class="contact-grid">
+
+      <!-- LEFT: info + calendly -->
+      <div class="reveal">
+        <div class="contact-info">
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="ci-label">Email</div><div class="ci-val">hello@slydr.io</div></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v4M4 4v.5M7 10V7.5C7 6.7 7.7 6 8.5 6S10 6.7 10 7.5V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="ci-label">LinkedIn</div><div class="ci-val">linkedin.com/company/slydr</div></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="ci-label">Twitter / X</div><div class="ci-val">@slydr_io</div></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="ci-label">Response time</div><div class="ci-val">Within 24 hours</div></div></div>
+        </div>
+
+        <!-- Calendly book-a-call block -->
+        <div style="margin-top:28px;border:1px solid var(--border-b);background:var(--surface2);padding:28px 28px">
+          <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Prefer to just book a call?</div>
+          <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:18px">Skip the form. Pick a 30-minute slot directly on our calendar and we'll walk you through slydr live.</p>
+          <!-- Replace CALENDLY_URL with your actual link -->
+          <button class="btn-calendly" style="width:100%;text-align:center" onclick="openCalendly()">Book a 30-min walkthrough</button>
+          <!-- Calendly inline embed (optional — uncomment to enable) -->
+          <!-- <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR_LINK/30min" style="min-width:280px;height:480px;margin-top:20px"></div> -->
+          <!-- Load Calendly widget: add assets.calendly.com/assets/external/widget.js to your head section -->
+        </div>
+      </div>
+
+      <!-- RIGHT: inquiry form -->
+      <div class="reveal rd2">
+        <div style="border:1px solid var(--border);background:var(--surface);padding:44px 40px">
+          <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:24px">Send an inquiry</div>
+
+          <!-- Inquiry type selector -->
+          <div style="margin-bottom:20px">
+            <div class="f-label" style="margin-bottom:10px">What can we help with?</div>
+            <div class="inquiry-type" id="iq-type">
+              <div class="iq-opt selected" data-val="demo" onclick="selectInquiry(this)"><div class="iq-dot"></div><span class="iq-label">Demo request</span></div>
+              <div class="iq-opt" data-val="enterprise" onclick="selectInquiry(this)"><div class="iq-dot"></div><span class="iq-label">Enterprise inquiry</span></div>
+              <div class="iq-opt" data-val="partner" onclick="selectInquiry(this)"><div class="iq-dot"></div><span class="iq-label">Design partner</span></div>
+              <div class="iq-opt" data-val="other" onclick="selectInquiry(this)"><div class="iq-dot"></div><span class="iq-label">Other</span></div>
+            </div>
+          </div>
+
+          <div id="contact-form-wrap">
+            <form id="contact-form" novalidate>
+              <!-- Replace action with Formspree endpoint: https://formspree.io/f/YOUR_ID -->
+              <!-- <form id="contact-form" action="https://formspree.io/f/YOUR_ID" method="POST"> -->
+              <input type="hidden" name="inquiry_type" id="cf-inquiry-hidden" value="demo"/>
+              <div class="f-row">
+                <div class="f-group">
+                  <label class="f-label" for="cf-fname">First name</label>
+                  <input class="f-input" id="cf-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name"/>
+                  <span class="f-err-msg" id="cf-fname-err">Required</span>
+                </div>
+                <div class="f-group">
+                  <label class="f-label" for="cf-lname">Last name</label>
+                  <input class="f-input" id="cf-lname" name="last_name" type="text" placeholder="Johnson" autocomplete="family-name"/>
+                </div>
+              </div>
+              <div class="f-group">
+                <label class="f-label" for="cf-email">Work email</label>
+                <input class="f-input" id="cf-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email"/>
+                <span class="f-err-msg" id="cf-email-err">Please enter a valid work email</span>
+              </div>
+              <div class="f-row">
+                <div class="f-group">
+                  <label class="f-label" for="cf-company">Company</label>
+                  <input class="f-input" id="cf-company" name="company" type="text" placeholder="Acme Corp"/>
+                </div>
+                <div class="f-group">
+                  <label class="f-label" for="cf-size">Team size</label>
+                  <select class="f-select" id="cf-size" name="team_size">
+                    <option value="">Select…</option>
+                    <option>1–10</option><option>11–50</option><option>51–200</option><option>200+</option>
+                  </select>
+                </div>
+              </div>
+              <div class="f-group">
+                <label class="f-label" for="cf-msg">Message <span style="color:var(--faint)">(optional)</span></label>
+                <textarea class="f-textarea" id="cf-msg" name="message" placeholder="Tell us about your slide problem, your stack, or whatever's on your mind..."></textarea>
+              </div>
+              <button type="submit" class="btn-gold" style="width:100%;text-align:center;padding:15px;margin-top:4px" id="cf-submit">Send inquiry</button>
+              <p style="font-size:11px;color:var(--faint);text-align:center;margin-top:12px;letter-spacing:.04em">No commitment. We respond within 24 hours.</p>
+            </form>
+            <div class="form-success" id="contact-success">
+              <div class="success-ico"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="success-title">Message sent.</div>
+              <p class="success-sub">We'll reply within 24 hours. In the meantime, feel free to book a call directly.</p>
+              <div style="margin-top:24px">
+                <button class="btn-calendly" style="margin:0 auto" onclick="openCalendly()">Book a call</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  FOOTER (global)                    -->
+<!-- ═══════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="foot-brand">
+      <a href="#" class="nav-logo" onclick="showPage('home',null);return false">slydr<sup>®</sup></a>
+      <p class="foot-tagline">Organizational presentation memory. Stop rebuilding slides.</p>
+      <div class="foot-socials">
+        <a href="#" class="soc-btn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v4M4 4v.5M7 10V7.5C7 6.7 7.7 6 8.5 6S10 6.7 10 7.5V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+        <a href="#" class="soc-btn" title="Twitter/X"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#" onclick="showPage('features',null);return false">Features</a></li>
+        <li><a href="#" onclick="showPage('pricing',null);return false">Pricing</a></li>
+        <li><a href="#" onclick="showPage('home',null);return false">How it works</a></li>
+        <li><a href="#" onclick="showPage('contact',null);return false">Request demo</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#" onclick="showPage('about',null);return false">About</a></li>
+        <li><a href="#" onclick="showPage('contact',null);return false">Contact</a></li>
+        <li><a href="#">LinkedIn</a></li>
+        <li><a href="#">Twitter / X</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy policy</a></li>
+        <li><a href="#">Terms of service</a></li>
+        <li><a href="#">Security</a></li>
+        <li><a href="#">Cookie policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="foot-copy">© 2026 slydr. All rights reserved.</span>
+    <div class="foot-legal">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Security</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+
+/* ── THEME ── */
+(function(){
+  // Follow OS preference until the visitor chooses a theme.
+  const saved = localStorage.getItem('slydr-theme');
+  const preferLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  document.documentElement.setAttribute('data-theme', saved || (preferLight ? 'light' : 'dark'));
+})();
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const isLight = html.getAttribute('data-theme') === 'light';
+  if(isLight){
+    html.setAttribute('data-theme','dark');
+    localStorage.setItem('slydr-theme','dark');
+  } else {
+    html.setAttribute('data-theme','light');
+    localStorage.setItem('slydr-theme','light');
+  }
+}
+
+/* ── NAV SCROLL ── */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>50));
+
+/* ── PAGE ROUTER ── */
+function showPage(id,triggerEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-center li a').forEach(a=>a.classList.remove('active-link'));
+  const link=document.querySelector('.nav-center li a[data-page="'+id+'"]');
+  if(link) link.classList.add('active-link');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveals,100);
+}
+
+/* ── REVEAL ON SCROLL ── */
+function initReveals(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}});
+  },{threshold:.08});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>obs.observe(el));
+}
+initReveals();
+
+/* ── CHART ANIMATION ── */
+const chartBars=document.querySelectorAll('#chart .sv-b');
+const baseH=[60,80,44,90,64];
+function animChart(){chartBars.forEach((b,i)=>{const v=baseH[i]+Math.round((Math.random()-.5)*28);b.style.height=Math.max(18,Math.min(94,v))+'%'})}
+setInterval(animChart,2400);
+
+/* ── PLUGIN THUMB CYCLE ── */
+const thumbs=document.querySelectorAll('.pt');
+let ti=0;
+setInterval(()=>{
+  thumbs.forEach(t=>t.classList.remove('hot'));
+  ti=(ti+1)%thumbs.length;
+  thumbs[ti].classList.add('hot');
+},2000);
+
+/* ─────────────────────────────────────
+   MODAL SYSTEM
+────────────────────────────────────── */
+function openModal(id){
+  const overlay=document.getElementById('modal-'+id);
+  if(!overlay) return;
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  // reset to form state if success was showing
+  const success=overlay.querySelector('.form-success');
+  const form=overlay.querySelector('form');
+  if(success) success.classList.remove('show');
+  if(form){ form.classList.remove('form-loading'); form.style.display=''; }
+  // reset errors
+  overlay.querySelectorAll('.f-err-msg').forEach(e=>e.classList.remove('show'));
+  overlay.querySelectorAll('.f-input,.f-select,.f-textarea').forEach(el=>el.classList.remove('err'));
+}
+
+function closeModal(id){
+  const overlay=document.getElementById('modal-'+id);
+  if(!overlay) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// Close on Escape key
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.open').forEach(m=>{
+      m.classList.remove('open');
+      document.body.style.overflow='';
+    });
+  }
+});
+
+/* ─────────────────────────────────────
+   CALENDLY INTEGRATION
+   Replace CALENDLY_URL with your actual link:
+   e.g. https://calendly.com/yourname/slydr-demo-30min
+────────────────────────────────────── */
+const CALENDLY_URL = 'https://calendly.com/YOUR_CALENDLY_LINK/30min';
+// ↑ Replace this with your real Calendly URL before deploying
+
+function openCalendly(){
+  // Option A: Open Calendly in a new tab (simplest)
+  window.open(CALENDLY_URL, '_blank');
+
+  // Option B: Use Calendly popup widget (requires their script tag)
+  // Add to <head>: <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+  // Add to <head>: load assets.calendly.com/assets/external/widget.js (see Calendly docs)
+  // Then uncomment below:
+  // if(window.Calendly){ Calendly.initPopupWidget({url: CALENDLY_URL}); return false; }
+}
+
+/* ─────────────────────────────────────
+   TOAST NOTIFICATION
+────────────────────────────────────── */
+function showNotif(msg, duration=3800){
+  const n=document.getElementById('notif');
+  const t=document.getElementById('notif-txt');
+  t.textContent=msg;
+  n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'), duration);
+}
+
+/* ─────────────────────────────────────
+   FORM VALIDATION HELPERS
+────────────────────────────────────── */
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }
+
+function validateField(inputEl, errEl, check){
+  const ok=check(inputEl.value);
+  inputEl.classList.toggle('err',!ok);
+  if(errEl) errEl.classList.toggle('show',!ok);
+  return ok;
+}
+
+function setSubmitting(btn, loading){
+  btn.disabled=loading;
+  btn.textContent=loading ? 'Sending…' : btn.dataset.label||btn.textContent;
+  if(!btn.dataset.label) btn.dataset.label=btn.textContent;
+}
+
+/* ─────────────────────────────────────
+   DEMO MODAL FORM
+   To use Formspree: set the form action attribute to
+   https://formspree.io/f/YOUR_ID and remove the fetch() below,
+   or keep fetch() and set FORMSPREE_DEMO_ID.
+────────────────────────────────────── */
+const FORMSPREE_DEMO_ID = 'YOUR_FORMSPREE_DEMO_ID'; // ← Replace
+
+document.getElementById('demo-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const fname=document.getElementById('df-fname');
+  const email=document.getElementById('df-email');
+  let valid=true;
+  valid=validateField(fname, document.getElementById('df-fname-err'), v=>v.trim().length>0) && valid;
+  valid=validateField(email, document.getElementById('df-email-err'), isValidEmail) && valid;
+  if(!valid) return;
+
+  const btn=document.getElementById('demo-submit');
+  setSubmitting(btn, true);
+  this.classList.add('form-loading');
+
+  // ── Formspree submission ──
+  // Uncomment and set your ID to enable real submissions:
+  /*
+  try{
+    const res = await fetch(`https://formspree.io/f/${FORMSPREE_DEMO_ID}`, {
+      method:'POST',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body: JSON.stringify({
+        first_name: document.getElementById('df-fname').value,
+        last_name:  document.getElementById('df-lname').value,
+        email:      document.getElementById('df-email').value,
+        company:    document.getElementById('df-company').value,
+        team_size:  document.getElementById('df-size').value,
+        message:    document.getElementById('df-msg').value,
+        _subject:   'slydr demo request'
+      })
+    });
+    if(!res.ok) throw new Error('Network error');
+  } catch(err){
+    setSubmitting(btn, false);
+    this.classList.remove('form-loading');
+    showNotif('Something went wrong. Please email us at hello@slydr.io');
+    return;
+  }
+  */
+
+  // ── Simulated success (remove when using Formspree) ──
+  await new Promise(r=>setTimeout(r,800));
+
+  this.style.display='none';
+  document.getElementById('demo-success').classList.add('show');
+  showNotif('Request received. We\'ll be in touch within 24 hours.');
+});
+
+/* ─────────────────────────────────────
+   WAITLIST MODAL FORM
+   Replace FORMSPREE_WAITLIST_ID with your Formspree ID.
+   Or replace the entire form with a Tally embed.
+────────────────────────────────────── */
+const FORMSPREE_WAITLIST_ID = 'YOUR_FORMSPREE_WAITLIST_ID'; // ← Replace
+
+document.getElementById('wl-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const email=document.getElementById('wl-email');
+  const ok=validateField(email, document.getElementById('wl-email-err'), isValidEmail);
+  if(!ok) return;
+
+  const btn=document.getElementById('wl-submit');
+  setSubmitting(btn, true);
+  this.classList.add('form-loading');
+
+  // ── Formspree submission ──
+  /*
+  try{
+    const res = await fetch(`https://formspree.io/f/${FORMSPREE_WAITLIST_ID}`, {
+      method:'POST',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body: JSON.stringify({
+        email:   document.getElementById('wl-email').value,
+        company: document.getElementById('wl-company').value,
+        role:    document.getElementById('wl-role').value,
+        _subject:'slydr waitlist signup'
+      })
+    });
+    if(!res.ok) throw new Error();
+  } catch(err){
+    setSubmitting(btn, false);
+    this.classList.remove('form-loading');
+    showNotif('Something went wrong. Try emailing hello@slydr.io');
+    return;
+  }
+  */
+
+  await new Promise(r=>setTimeout(r,700));
+  this.style.display='none';
+  document.getElementById('wl-success').classList.add('show');
+  showNotif('You\'re on the list. We\'ll be in touch.');
+});
+
+/* ─────────────────────────────────────
+   WAITLIST INLINE FORM (homepage section)
+────────────────────────────────────── */
+document.getElementById('wl-inline-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const email=document.getElementById('wli-email');
+  const ok=validateField(email, document.getElementById('wli-err'), isValidEmail);
+  if(!ok) return;
+
+  const btn=document.getElementById('wli-submit');
+  const origText=btn.textContent;
+  btn.textContent='…'; btn.disabled=true;
+
+  // ── Formspree submission ──
+  /*
+  try{
+    await fetch(`https://formspree.io/f/${FORMSPREE_WAITLIST_ID}`, {
+      method:'POST',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body: JSON.stringify({ email: email.value, company: document.getElementById('wli-company').value, _subject:'slydr waitlist' })
+    });
+  } catch(err){ btn.textContent=origText; btn.disabled=false; return; }
+  */
+
+  await new Promise(r=>setTimeout(r,700));
+  this.style.display='none';
+  document.getElementById('wl-inline-success').classList.add('show');
+  showNotif('You\'re on the waitlist.');
+});
+
+/* ─────────────────────────────────────
+   CONTACT PAGE FORM
+────────────────────────────────────── */
+const FORMSPREE_CONTACT_ID = 'YOUR_FORMSPREE_CONTACT_ID'; // ← Replace
+
+document.getElementById('contact-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const fname=document.getElementById('cf-fname');
+  const email=document.getElementById('cf-email');
+  let valid=true;
+  valid=validateField(fname, document.getElementById('cf-fname-err'), v=>v.trim().length>0) && valid;
+  valid=validateField(email, document.getElementById('cf-email-err'), isValidEmail) && valid;
+  if(!valid) return;
+
+  const btn=document.getElementById('cf-submit');
+  setSubmitting(btn, true);
+  this.classList.add('form-loading');
+
+  // ── Formspree submission ──
+  /*
+  try{
+    const res = await fetch(`https://formspree.io/f/${FORMSPREE_CONTACT_ID}`, {
+      method:'POST',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body: JSON.stringify({
+        inquiry_type: document.getElementById('cf-inquiry-hidden').value,
+        first_name:   fname.value,
+        last_name:    document.getElementById('cf-lname').value,
+        email:        email.value,
+        company:      document.getElementById('cf-company').value,
+        team_size:    document.getElementById('cf-size').value,
+        message:      document.getElementById('cf-msg').value,
+        _subject:     'slydr inquiry: ' + document.getElementById('cf-inquiry-hidden').value
+      })
+    });
+    if(!res.ok) throw new Error();
+  } catch(err){
+    setSubmitting(btn, false);
+    this.classList.remove('form-loading');
+    showNotif('Something went wrong. Please email hello@slydr.io');
+    return;
+  }
+  */
+
+  await new Promise(r=>setTimeout(r,800));
+  this.style.display='none';
+  document.getElementById('contact-success').classList.add('show');
+  showNotif('Message sent. We\'ll reply within 24 hours.');
+});
+
+/* ─────────────────────────────────────
+   INQUIRY TYPE SELECTOR (contact page)
+────────────────────────────────────── */
+function selectInquiry(el){
+  document.querySelectorAll('.iq-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cf-inquiry-hidden').value=el.dataset.val;
+  // Update submit button label
+  const labels={demo:'Request a walkthrough',enterprise:'Send enterprise inquiry',partner:'Apply as design partner',other:'Send message'};
+  const btn=document.getElementById('cf-submit');
+  btn.textContent=labels[el.dataset.val]||'Send inquiry';
+  btn.dataset.label=btn.textContent;
+}
+
+/* ─────────────────────────────────────
+   REAL-TIME VALIDATION (on blur)
+────────────────────────────────────── */
+document.querySelectorAll('.f-input[type="email"]').forEach(input=>{
+  input.addEventListener('blur',()=>{
+    if(input.value && !isValidEmail(input.value)){
+      input.classList.add('err');
+      const err=document.getElementById(input.id+'-err');
+      if(err) err.classList.add('show');
+    }
+  });
+  input.addEventListener('input',()=>{
+    if(input.classList.contains('err') && isValidEmail(input.value)){
+      input.classList.remove('err');
+      const err=document.getElementById(input.id+'-err');
+      if(err) err.classList.remove('show');
+    }
+  });
+});
+</script>
+</body>
+</html>
