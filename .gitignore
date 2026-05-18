@@ -4,3 +4,9 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# next
+.next
+out
+node_modules
+npm-debug.log*
