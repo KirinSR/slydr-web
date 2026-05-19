@@ -441,6 +441,10 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 .calendly-sub{font-size:11px;color:var(--muted);margin-top:2px}
 .btn-calendly{background:none;border:1px solid var(--gold);color:var(--gold);padding:9px 20px;font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .25s,color .25s;white-space:nowrap;flex-shrink:0}
 .btn-calendly:hover{background:var(--gold);color:var(--void)}
+.modal-box.calendly-box{max-width:min(1120px,94vw);width:min(1120px,94vw)}
+.calendly-embed-wrap{border:1px solid var(--border);background:var(--surface2);min-height:650px;overflow:hidden}
+.calendly-inline-widget{min-width:320px;height:650px}
+.calendly-fallback{display:flex;align-items:center;justify-content:center;min-height:650px;padding:40px;text-align:center;color:var(--muted);font-size:13px}
 
 /* ─── WAITLIST SECTION ─── */
 .s-waitlist{padding:120px 0;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -758,6 +762,8 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
   .steps-g,.testi-grid,.stack-grid,.big-feat-grid,.values-grid{grid-template-columns:1fr}
   .cf-row{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr}
+  .modal-box.calendly-box{width:94vw;max-height:92vh}
+  .calendly-embed-wrap,.calendly-inline-widget,.calendly-fallback{min-height:560px;height:560px}
 }
 </style>
 </head>
@@ -921,6 +927,31 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
           <div class="success-ico"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11l5 5 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <div class="success-title">You're on the list.</div>
           <p class="success-sub">We'll notify you when your spot opens. In the meantime, follow our build-in-public updates on LinkedIn and X.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--  MODAL: CALENDLY INLINE             -->
+<!-- ═══════════════════════════════════ -->
+<div class="modal-overlay" id="modal-calendly" role="dialog" aria-modal="true" aria-labelledby="calendly-title">
+  <div class="modal-backdrop" onclick="closeModal('calendly')"></div>
+  <div class="modal-box calendly-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-eyebrow">Book directly</div>
+        <div class="modal-title" id="calendly-title">Pick a<br><em>demo slot.</em></div>
+        <p class="modal-sub">Choose a 30-minute walkthrough time without leaving the site.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('calendly')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="calendly-embed-wrap">
+        <div id="calendly-inline-embed" class="calendly-inline-widget"></div>
+        <div class="calendly-fallback" id="calendly-fallback" style="display:none">
+          Calendly is taking longer than expected to load. Please check the Calendly URL before deploying.
         </div>
       </div>
     </div>
@@ -1637,16 +1668,62 @@ document.addEventListener('keydown',e=>{
 ────────────────────────────────────── */
 const CALENDLY_URL = 'https://calendly.com/YOUR_CALENDLY_LINK/30min';
 // ↑ Replace this with your real Calendly URL before deploying
+let calendlyScriptPromise=null;
 
 function openCalendly(){
-  // Option A: Open Calendly in a new tab (simplest)
-  window.open(CALENDLY_URL, '_blank');
+  document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+  openModal('calendly');
+  initCalendlyEmbed();
+}
 
-  // Option B: Use Calendly popup widget (requires their script tag)
-  // Add to <head>: <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
-  // Add to <head>: load assets.calendly.com/assets/external/widget.js (see Calendly docs)
-  // Then uncomment below:
-  // if(window.Calendly){ Calendly.initPopupWidget({url: CALENDLY_URL}); return false; }
+function loadCalendlyScript(){
+  if(window.Calendly) return Promise.resolve();
+  if(calendlyScriptPromise) return calendlyScriptPromise;
+
+  calendlyScriptPromise=new Promise((resolve,reject)=>{
+    const cssId='calendly-widget-css';
+    if(!document.getElementById(cssId)){
+      const link=document.createElement('link');
+      link.id=cssId;
+      link.rel='stylesheet';
+      link.href='https://assets.calendly.com/assets/external/widget.css';
+      document.head.appendChild(link);
+    }
+
+    const script=document.createElement('script');
+    script.src='https://assets.calendly.com/assets/external/widget.js';
+    script.async=true;
+    script.onload=resolve;
+    script.onerror=reject;
+    document.body.appendChild(script);
+  });
+
+  return calendlyScriptPromise;
+}
+
+function initCalendlyEmbed(){
+  const embed=document.getElementById('calendly-inline-embed');
+  const fallback=document.getElementById('calendly-fallback');
+  if(!embed) return;
+  if(embed.dataset.loaded==='true') return;
+
+  loadCalendlyScript()
+    .then(()=>{
+      if(!window.Calendly) throw new Error('Calendly widget unavailable');
+      embed.innerHTML='';
+      window.Calendly.initInlineWidget({
+        url:CALENDLY_URL,
+        parentElement:embed,
+        prefill:{},
+        utm:{}
+      });
+      embed.dataset.loaded='true';
+      if(fallback) fallback.style.display='none';
+    })
+    .catch(()=>{
+      if(fallback) fallback.style.display='flex';
+      showNotif('Calendly could not load. Check the Calendly URL before deploying.');
+    });
 }
 
 /* ─────────────────────────────────────
