@@ -442,9 +442,10 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 .btn-calendly{background:none;border:1px solid var(--gold);color:var(--gold);padding:9px 20px;font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .25s,color .25s;white-space:nowrap;flex-shrink:0}
 .btn-calendly:hover{background:var(--gold);color:var(--void)}
 .modal-box.calendly-box{max-width:min(1120px,94vw);width:min(1120px,94vw)}
-.calendly-embed-wrap{border:1px solid var(--border);background:var(--surface2);min-height:650px;overflow:hidden}
-.calendly-inline-widget{min-width:320px;height:650px}
-.calendly-fallback{display:flex;align-items:center;justify-content:center;min-height:650px;padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.calendly-box .modal-body{padding-top:12px}
+.calendly-embed-wrap{border:1px solid var(--border);background:var(--surface2);height:650px;overflow:hidden}
+.calendly-fallback{display:block;height:650px;padding:0;color:var(--muted);font-size:13px}
+.calendly-fallback iframe{display:block;width:100%;height:100%;border:0;background:var(--surface)}
 
 /* ─── WAITLIST SECTION ─── */
 .s-waitlist{padding:120px 0;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -713,6 +714,8 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 .ci-ico{width:32px;height:32px;border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;margin-top:2px}
 .ci-label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .ci-val{font-size:14px;color:var(--white)}
+a.ci-val{text-decoration:none;cursor:none;transition:color .25s}
+a.ci-val:hover{color:var(--gold)}
 .cf{display:flex;flex-direction:column;gap:16px}
 .cf-group{display:flex;flex-direction:column;gap:6px}
 .cf-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
@@ -763,7 +766,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
   .cf-row{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr}
   .modal-box.calendly-box{width:94vw;max-height:92vh}
-  .calendly-embed-wrap,.calendly-inline-widget,.calendly-fallback{min-height:560px;height:560px}
+  .calendly-embed-wrap,.calendly-fallback{height:560px}
 }
 </style>
 </head>
@@ -821,7 +824,6 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
           <div class="calendly-label">Book a call directly</div>
           <div class="calendly-sub">Pick a time that works — 30 min walkthrough</div>
         </div>
-        <!-- Replace CALENDLY_URL with your real Calendly link e.g. https://calendly.com/yourname/slydr-demo -->
         <button class="btn-calendly" onclick="openCalendly()">Book a call</button>
       </div>
       <!-- Calendly embed placeholder -->
@@ -832,13 +834,13 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
 
       <!-- Demo request form -->
       <div id="demo-form-wrap">
-        <form id="demo-form" novalidate>
-          <!-- Replace ACTION with your Formspree endpoint: https://formspree.io/f/YOUR_ID -->
-          <!-- <form id="demo-form" action="https://formspree.io/f/YOUR_ID" method="POST"> -->
+        <form id="demo-form" action="https://formspree.io/f/mojbvyky" method="POST" onsubmit="return submitFormspree(this,event,'demo-success','Request received. We will be in touch within 24 hours.')">
+          <input type="hidden" name="_subject" value="slydr demo request"/>
+          <input type="hidden" name="form_type" value="demo_request"/>
           <div class="f-row">
             <div class="f-group">
               <label class="f-label" for="df-fname">First name</label>
-              <input class="f-input" id="df-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name"/>
+              <input class="f-input" id="df-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name" required/>
               <span class="f-err-msg" id="df-fname-err">Required</span>
             </div>
             <div class="f-group">
@@ -848,7 +850,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
           </div>
           <div class="f-group">
             <label class="f-label" for="df-email">Work email</label>
-            <input class="f-input" id="df-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email"/>
+            <input class="f-input" id="df-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email" required/>
             <span class="f-err-msg" id="df-email-err">Please enter a valid work email</span>
           </div>
           <div class="f-row">
@@ -876,7 +878,6 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
           <div class="success-title">Request received.</div>
           <p class="success-sub">We'll be in touch within 24 hours.<br>Or book a time directly on our calendar.</p>
           <div style="margin-top:24px">
-            <!-- Replace CALENDLY_URL -->
             <button class="btn-calendly" style="margin:0 auto" onclick="openCalendly()">Book a call now</button>
           </div>
         </div>
@@ -901,12 +902,12 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
     </div>
     <div class="modal-body">
       <div id="wl-form-wrap">
-        <form id="wl-form" novalidate>
-          <!-- Replace ACTION: https://formspree.io/f/YOUR_WAITLIST_ID -->
-          <!-- Or use Tally: add the tally embed.js script tag to your head, then use a data-tally-src div here -->
+        <form id="wl-form" action="https://formspree.io/f/mojbvyky" method="POST" onsubmit="return submitFormspree(this,event,'wl-success','You are on the list. We will be in touch.')">
+          <input type="hidden" name="_subject" value="slydr waitlist signup"/>
+          <input type="hidden" name="form_type" value="waitlist_signup"/>
           <div class="f-group">
             <label class="f-label" for="wl-email">Work email</label>
-            <input class="f-input" id="wl-email" name="email" type="email" placeholder="you@company.com" autocomplete="email"/>
+            <input class="f-input" id="wl-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required/>
             <span class="f-err-msg" id="wl-email-err">Please enter a valid email</span>
           </div>
           <div class="f-group">
@@ -949,9 +950,8 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
     </div>
     <div class="modal-body">
       <div class="calendly-embed-wrap">
-        <div id="calendly-inline-embed" class="calendly-inline-widget"></div>
-        <div class="calendly-fallback" id="calendly-fallback" style="display:none">
-          Calendly is taking longer than expected to load. Please check the Calendly URL before deploying.
+        <div class="calendly-fallback" id="calendly-fallback">
+          <iframe id="calendly-fallback-frame" title="Book a slydr demo" src="https://calendly.com/slydr-intro/new-meeting?hide_event_type_details=1&hide_gdpr_banner=1&background_color=080808&text_color=f0ede8&primary_color=c9a96e"></iframe>
         </div>
       </div>
     </div>
@@ -1154,13 +1154,13 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
         <div class="wl-form reveal rd2">
           <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px">Join waitlist</div>
           <div id="wl-inline-wrap">
-            <form id="wl-inline-form" novalidate>
-              <!-- Replace with Formspree endpoint: action="https://formspree.io/f/YOUR_ID" method="POST" -->
-              <!-- Or replace entire form with Tally embed: <div data-tally-src="https://tally.so/embed/YOUR_ID"></div> -->
+            <form id="wl-inline-form" action="https://formspree.io/f/mojbvyky" method="POST" onsubmit="return submitFormspree(this,event,'wl-inline-success','You are on the waitlist.')">
+              <input type="hidden" name="_subject" value="slydr inline waitlist signup"/>
+              <input type="hidden" name="form_type" value="inline_waitlist_signup"/>
               <div class="f-group">
                 <label class="f-label" for="wli-email">Work email</label>
                 <div class="wl-inline">
-                  <input class="f-input" id="wli-email" name="email" type="email" placeholder="you@company.com"/>
+                  <input class="f-input" id="wli-email" name="email" type="email" placeholder="you@company.com" required/>
                   <button type="submit" class="btn-gold" id="wli-submit">Join</button>
                 </div>
                 <span class="f-err-msg" id="wli-err">Please enter a valid email</span>
@@ -1414,7 +1414,9 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
       <!-- LEFT: info + calendly -->
       <div class="reveal">
         <div class="contact-info">
-          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="ci-label">Email</div><div class="ci-val">hello@slydr.io</div></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="ci-label">General</div><a class="ci-val" href="mailto:hello@slydr.net">hello@slydr.net</a></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="ci-label">Contact</div><a class="ci-val" href="mailto:contact@slydr.net">contact@slydr.net</a></div></div>
+          <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="ci-label">Support</div><a class="ci-val" href="mailto:support@slydr.net">support@slydr.net</a></div></div>
           <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6v4M4 4v.5M7 10V7.5C7 6.7 7.7 6 8.5 6S10 6.7 10 7.5V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="ci-label">LinkedIn</div><div class="ci-val">linkedin.com/company/slydr</div></div></div>
           <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="ci-label">Twitter / X</div><div class="ci-val">@slydr_io</div></div></div>
           <div class="ci"><div class="ci-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="ci-label">Response time</div><div class="ci-val">Within 24 hours</div></div></div>
@@ -1424,11 +1426,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
         <div style="margin-top:28px;border:1px solid var(--border-b);background:var(--surface2);padding:28px 28px">
           <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Prefer to just book a call?</div>
           <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:18px">Skip the form. Pick a 30-minute slot directly on our calendar and we'll walk you through slydr live.</p>
-          <!-- Replace CALENDLY_URL with your actual link -->
           <button class="btn-calendly" style="width:100%;text-align:center" onclick="openCalendly()">Book a 30-min walkthrough</button>
-          <!-- Calendly inline embed (optional — uncomment to enable) -->
-          <!-- <div class="calendly-inline-widget" data-url="https://calendly.com/YOUR_LINK/30min" style="min-width:280px;height:480px;margin-top:20px"></div> -->
-          <!-- Load Calendly widget: add assets.calendly.com/assets/external/widget.js to your head section -->
         </div>
       </div>
 
@@ -1449,14 +1447,13 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
           </div>
 
           <div id="contact-form-wrap">
-            <form id="contact-form" novalidate>
-              <!-- Replace action with Formspree endpoint: https://formspree.io/f/YOUR_ID -->
-              <!-- <form id="contact-form" action="https://formspree.io/f/YOUR_ID" method="POST"> -->
+            <form id="contact-form" action="https://formspree.io/f/mojbvyky" method="POST" onsubmit="return submitFormspree(this,event,'contact-success','Message sent. We will reply within 24 hours.')">
+              <input type="hidden" name="_subject" value="slydr contact inquiry"/>
               <input type="hidden" name="inquiry_type" id="cf-inquiry-hidden" value="demo"/>
               <div class="f-row">
                 <div class="f-group">
                   <label class="f-label" for="cf-fname">First name</label>
-                  <input class="f-input" id="cf-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name"/>
+                  <input class="f-input" id="cf-fname" name="first_name" type="text" placeholder="Alex" autocomplete="given-name" required/>
                   <span class="f-err-msg" id="cf-fname-err">Required</span>
                 </div>
                 <div class="f-group">
@@ -1466,7 +1463,7 @@ nav.scrolled{padding:16px 64px;background:rgba(8,8,8,0.92);backdrop-filter:blur(
               </div>
               <div class="f-group">
                 <label class="f-label" for="cf-email">Work email</label>
-                <input class="f-input" id="cf-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email"/>
+                <input class="f-input" id="cf-email" name="email" type="email" placeholder="alex@company.com" autocomplete="email" required/>
                 <span class="f-err-msg" id="cf-email-err">Please enter a valid work email</span>
               </div>
               <div class="f-row">
@@ -1638,7 +1635,16 @@ function openModal(id){
   const success=overlay.querySelector('.form-success');
   const form=overlay.querySelector('form');
   if(success) success.classList.remove('show');
-  if(form){ form.classList.remove('form-loading'); form.style.display=''; }
+  if(form){
+    form.classList.remove('form-loading');
+    form.style.display='';
+    form.reset();
+    const btn=form.querySelector('button[type="submit"]');
+    if(btn){
+      btn.disabled=false;
+      if(btn.dataset.label) btn.textContent=btn.dataset.label;
+    }
+  }
   // reset errors
   overlay.querySelectorAll('.f-err-msg').forEach(e=>e.classList.remove('show'));
   overlay.querySelectorAll('.f-input,.f-select,.f-textarea').forEach(el=>el.classList.remove('err'));
@@ -1663,67 +1669,40 @@ document.addEventListener('keydown',e=>{
 
 /* ─────────────────────────────────────
    CALENDLY INTEGRATION
-   Replace CALENDLY_URL with your actual link:
-   e.g. https://calendly.com/yourname/slydr-demo-30min
+   Calendly inline iframe.
+   Calendly owns the internal calendar UI; supported color params keep it close to slydr.
 ────────────────────────────────────── */
-const CALENDLY_URL = 'https://calendly.com/YOUR_CALENDLY_LINK/30min';
-// ↑ Replace this with your real Calendly URL before deploying
-let calendlyScriptPromise=null;
+const CALENDLY_BASE_URL = 'https://calendly.com/slydr-intro/new-meeting';
 
 function openCalendly(){
   document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
-  openModal('calendly');
   initCalendlyEmbed();
+  openModal('calendly');
+  const box=document.querySelector('#modal-calendly .modal-box');
+  if(box) box.scrollTop=0;
 }
 
-function loadCalendlyScript(){
-  if(window.Calendly) return Promise.resolve();
-  if(calendlyScriptPromise) return calendlyScriptPromise;
-
-  calendlyScriptPromise=new Promise((resolve,reject)=>{
-    const cssId='calendly-widget-css';
-    if(!document.getElementById(cssId)){
-      const link=document.createElement('link');
-      link.id=cssId;
-      link.rel='stylesheet';
-      link.href='https://assets.calendly.com/assets/external/widget.css';
-      document.head.appendChild(link);
-    }
-
-    const script=document.createElement('script');
-    script.src='https://assets.calendly.com/assets/external/widget.js';
-    script.async=true;
-    script.onload=resolve;
-    script.onerror=reject;
-    document.body.appendChild(script);
-  });
-
-  return calendlyScriptPromise;
+function getCalendlyUrl(){
+  const isLight=document.documentElement.getAttribute('data-theme')==='light';
+  const theme=isLight
+    ? {background:'f5f1eb',text:'1a1610',primary:'a8783a'}
+    : {background:'080808',text:'f0ede8',primary:'c9a96e'};
+  return CALENDLY_BASE_URL+
+    '?hide_event_type_details=1&hide_gdpr_banner=1'+
+    '&background_color='+theme.background+
+    '&text_color='+theme.text+
+    '&primary_color='+theme.primary;
 }
 
 function initCalendlyEmbed(){
-  const embed=document.getElementById('calendly-inline-embed');
-  const fallback=document.getElementById('calendly-fallback');
-  if(!embed) return;
-  if(embed.dataset.loaded==='true') return;
-
-  loadCalendlyScript()
-    .then(()=>{
-      if(!window.Calendly) throw new Error('Calendly widget unavailable');
-      embed.innerHTML='';
-      window.Calendly.initInlineWidget({
-        url:CALENDLY_URL,
-        parentElement:embed,
-        prefill:{},
-        utm:{}
-      });
-      embed.dataset.loaded='true';
-      if(fallback) fallback.style.display='none';
-    })
-    .catch(()=>{
-      if(fallback) fallback.style.display='flex';
-      showNotif('Calendly could not load. Check the Calendly URL before deploying.');
-    });
+  const frame=document.getElementById('calendly-fallback-frame');
+  if(!frame) return;
+  const url=getCalendlyUrl();
+  if(!frame.dataset.themeUrl) frame.dataset.themeUrl=frame.src;
+  if(frame.dataset.themeUrl!==url){
+    frame.src=url;
+    frame.dataset.themeUrl=url;
+  }
 }
 
 /* ─────────────────────────────────────
@@ -1738,202 +1717,84 @@ function showNotif(msg, duration=3800){
 }
 
 /* ─────────────────────────────────────
-   FORM VALIDATION HELPERS
+   FORMSPREE AJAX FORMS
 ────────────────────────────────────── */
 function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }
 
-function validateField(inputEl, errEl, check){
-  const ok=check(inputEl.value);
-  inputEl.classList.toggle('err',!ok);
-  if(errEl) errEl.classList.toggle('show',!ok);
+function fieldErrorEl(input){
+  if(input.id==='wli-email') return document.getElementById('wli-err');
+  return document.getElementById(input.id+'-err');
+}
+
+function validateForm(form){
+  let ok=true;
+  form.querySelectorAll('[required]').forEach(input=>{
+    const valid=input.type==='email' ? isValidEmail(input.value) : input.value.trim().length>0;
+    input.classList.toggle('err',!valid);
+    const err=fieldErrorEl(input);
+    if(err) err.classList.toggle('show',!valid);
+    ok=valid&&ok;
+  });
   return ok;
 }
 
-function setSubmitting(btn, loading){
-  btn.disabled=loading;
-  btn.textContent=loading ? 'Sending…' : btn.dataset.label||btn.textContent;
+function setFormLoading(form, loading){
+  const btn=form.querySelector('button[type="submit"]');
+  if(!btn) return;
   if(!btn.dataset.label) btn.dataset.label=btn.textContent;
+  btn.disabled=loading;
+  btn.textContent=loading?'Sending...':btn.dataset.label;
+  form.classList.toggle('form-loading',loading);
 }
 
-/* ─────────────────────────────────────
-   DEMO MODAL FORM
-   To use Formspree: set the form action attribute to
-   https://formspree.io/f/YOUR_ID and remove the fetch() below,
-   or keep fetch() and set FORMSPREE_DEMO_ID.
-────────────────────────────────────── */
-const FORMSPREE_DEMO_ID = 'YOUR_FORMSPREE_DEMO_ID'; // ← Replace
+async function submitFormspree(form,e,successId,successMessage){
+  if(e) e.preventDefault();
+  if(form.dataset.submitting==='true') return false;
+  if(!validateForm(form)) return false;
 
-document.getElementById('demo-form').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const fname=document.getElementById('df-fname');
-  const email=document.getElementById('df-email');
-  let valid=true;
-  valid=validateField(fname, document.getElementById('df-fname-err'), v=>v.trim().length>0) && valid;
-  valid=validateField(email, document.getElementById('df-email-err'), isValidEmail) && valid;
-  if(!valid) return;
+  const success=document.getElementById(successId);
+  form.dataset.submitting='true';
+  setFormLoading(form,true);
 
-  const btn=document.getElementById('demo-submit');
-  setSubmitting(btn, true);
-  this.classList.add('form-loading');
-
-  // ── Formspree submission ──
-  // Uncomment and set your ID to enable real submissions:
-  /*
   try{
-    const res = await fetch(`https://formspree.io/f/${FORMSPREE_DEMO_ID}`, {
+    const res=await fetch(form.action,{
       method:'POST',
-      headers:{'Accept':'application/json','Content-Type':'application/json'},
-      body: JSON.stringify({
-        first_name: document.getElementById('df-fname').value,
-        last_name:  document.getElementById('df-lname').value,
-        email:      document.getElementById('df-email').value,
-        company:    document.getElementById('df-company').value,
-        team_size:  document.getElementById('df-size').value,
-        message:    document.getElementById('df-msg').value,
-        _subject:   'slydr demo request'
-      })
+      body:new FormData(form),
+      headers:{'Accept':'application/json'}
     });
-    if(!res.ok) throw new Error('Network error');
-  } catch(err){
-    setSubmitting(btn, false);
-    this.classList.remove('form-loading');
-    showNotif('Something went wrong. Please email us at hello@slydr.io');
-    return;
+    if(!res.ok) throw new Error('Formspree submission failed');
+    form.style.display='none';
+    if(success) success.classList.add('show');
+    showNotif(successMessage);
+  }catch(err){
+    showNotif('Something went wrong. Please email contact@slydr.net.');
+    setFormLoading(form,false);
+  }finally{
+    form.dataset.submitting='false';
   }
-  */
 
-  // ── Simulated success (remove when using Formspree) ──
-  await new Promise(r=>setTimeout(r,800));
+  return false;
+}
 
-  this.style.display='none';
-  document.getElementById('demo-success').classList.add('show');
-  showNotif('Request received. We\'ll be in touch within 24 hours.');
-});
+function initFormspreeForm(formId, successId, successMessage){
+  const form=document.getElementById(formId);
+  if(!form) return;
 
-/* ─────────────────────────────────────
-   WAITLIST MODAL FORM
-   Replace FORMSPREE_WAITLIST_ID with your Formspree ID.
-   Or replace the entire form with a Tally embed.
-────────────────────────────────────── */
-const FORMSPREE_WAITLIST_ID = 'YOUR_FORMSPREE_WAITLIST_ID'; // ← Replace
+  form.addEventListener('submit',e=>submitFormspree(form,e,successId,successMessage));
 
-document.getElementById('wl-form').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const email=document.getElementById('wl-email');
-  const ok=validateField(email, document.getElementById('wl-email-err'), isValidEmail);
-  if(!ok) return;
-
-  const btn=document.getElementById('wl-submit');
-  setSubmitting(btn, true);
-  this.classList.add('form-loading');
-
-  // ── Formspree submission ──
-  /*
-  try{
-    const res = await fetch(`https://formspree.io/f/${FORMSPREE_WAITLIST_ID}`, {
-      method:'POST',
-      headers:{'Accept':'application/json','Content-Type':'application/json'},
-      body: JSON.stringify({
-        email:   document.getElementById('wl-email').value,
-        company: document.getElementById('wl-company').value,
-        role:    document.getElementById('wl-role').value,
-        _subject:'slydr waitlist signup'
-      })
+  form.querySelectorAll('.f-input,.f-textarea,.f-select').forEach(input=>{
+    input.addEventListener('input',()=>{
+      input.classList.remove('err');
+      const err=fieldErrorEl(input);
+      if(err) err.classList.remove('show');
     });
-    if(!res.ok) throw new Error();
-  } catch(err){
-    setSubmitting(btn, false);
-    this.classList.remove('form-loading');
-    showNotif('Something went wrong. Try emailing hello@slydr.io');
-    return;
-  }
-  */
+  });
+}
 
-  await new Promise(r=>setTimeout(r,700));
-  this.style.display='none';
-  document.getElementById('wl-success').classList.add('show');
-  showNotif('You\'re on the list. We\'ll be in touch.');
-});
-
-/* ─────────────────────────────────────
-   WAITLIST INLINE FORM (homepage section)
-────────────────────────────────────── */
-document.getElementById('wl-inline-form').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const email=document.getElementById('wli-email');
-  const ok=validateField(email, document.getElementById('wli-err'), isValidEmail);
-  if(!ok) return;
-
-  const btn=document.getElementById('wli-submit');
-  const origText=btn.textContent;
-  btn.textContent='…'; btn.disabled=true;
-
-  // ── Formspree submission ──
-  /*
-  try{
-    await fetch(`https://formspree.io/f/${FORMSPREE_WAITLIST_ID}`, {
-      method:'POST',
-      headers:{'Accept':'application/json','Content-Type':'application/json'},
-      body: JSON.stringify({ email: email.value, company: document.getElementById('wli-company').value, _subject:'slydr waitlist' })
-    });
-  } catch(err){ btn.textContent=origText; btn.disabled=false; return; }
-  */
-
-  await new Promise(r=>setTimeout(r,700));
-  this.style.display='none';
-  document.getElementById('wl-inline-success').classList.add('show');
-  showNotif('You\'re on the waitlist.');
-});
-
-/* ─────────────────────────────────────
-   CONTACT PAGE FORM
-────────────────────────────────────── */
-const FORMSPREE_CONTACT_ID = 'YOUR_FORMSPREE_CONTACT_ID'; // ← Replace
-
-document.getElementById('contact-form').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const fname=document.getElementById('cf-fname');
-  const email=document.getElementById('cf-email');
-  let valid=true;
-  valid=validateField(fname, document.getElementById('cf-fname-err'), v=>v.trim().length>0) && valid;
-  valid=validateField(email, document.getElementById('cf-email-err'), isValidEmail) && valid;
-  if(!valid) return;
-
-  const btn=document.getElementById('cf-submit');
-  setSubmitting(btn, true);
-  this.classList.add('form-loading');
-
-  // ── Formspree submission ──
-  /*
-  try{
-    const res = await fetch(`https://formspree.io/f/${FORMSPREE_CONTACT_ID}`, {
-      method:'POST',
-      headers:{'Accept':'application/json','Content-Type':'application/json'},
-      body: JSON.stringify({
-        inquiry_type: document.getElementById('cf-inquiry-hidden').value,
-        first_name:   fname.value,
-        last_name:    document.getElementById('cf-lname').value,
-        email:        email.value,
-        company:      document.getElementById('cf-company').value,
-        team_size:    document.getElementById('cf-size').value,
-        message:      document.getElementById('cf-msg').value,
-        _subject:     'slydr inquiry: ' + document.getElementById('cf-inquiry-hidden').value
-      })
-    });
-    if(!res.ok) throw new Error();
-  } catch(err){
-    setSubmitting(btn, false);
-    this.classList.remove('form-loading');
-    showNotif('Something went wrong. Please email hello@slydr.io');
-    return;
-  }
-  */
-
-  await new Promise(r=>setTimeout(r,800));
-  this.style.display='none';
-  document.getElementById('contact-success').classList.add('show');
-  showNotif('Message sent. We\'ll reply within 24 hours.');
-});
+initFormspreeForm('demo-form','demo-success','Request received. We will be in touch within 24 hours.');
+initFormspreeForm('wl-form','wl-success','You are on the list. We will be in touch.');
+initFormspreeForm('wl-inline-form','wl-inline-success','You are on the waitlist.');
+initFormspreeForm('contact-form','contact-success','Message sent. We will reply within 24 hours.');
 
 /* ─────────────────────────────────────
    INQUIRY TYPE SELECTOR (contact page)
@@ -1948,26 +1809,6 @@ function selectInquiry(el){
   btn.textContent=labels[el.dataset.val]||'Send inquiry';
   btn.dataset.label=btn.textContent;
 }
-
-/* ─────────────────────────────────────
-   REAL-TIME VALIDATION (on blur)
-────────────────────────────────────── */
-document.querySelectorAll('.f-input[type="email"]').forEach(input=>{
-  input.addEventListener('blur',()=>{
-    if(input.value && !isValidEmail(input.value)){
-      input.classList.add('err');
-      const err=document.getElementById(input.id+'-err');
-      if(err) err.classList.add('show');
-    }
-  });
-  input.addEventListener('input',()=>{
-    if(input.classList.contains('err') && isValidEmail(input.value)){
-      input.classList.remove('err');
-      const err=document.getElementById(input.id+'-err');
-      if(err) err.classList.remove('show');
-    }
-  });
-});
 </script>
 </body>
 </html>
